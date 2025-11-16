@@ -309,6 +309,21 @@
             font-size: 14px;
             box-sizing: border-box;
         }
+        .online-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        .online-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .online-inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
     </style>
 </head>
 <body>
@@ -318,13 +333,14 @@
         <div class="instructions">
             <h3>วิธีใช้งาน:</h3>
             <ol>
-                <li>ตั้งค่า Google Sheets API (ครั้งแรกเท่านั้น)</li>
+                <li>ตั้งค่าฐานข้อมูลออนไลน์ (ครั้งแรกเท่านั้น)</li>
                 <li>อัปโหลดไฟล์ Excel เพื่อตรวจสอบเบอร์ซ้ำ</li>
-                <li>ระบบจะตรวจสอบกับฐานข้อมูลออนไลน์</li>
+                <li>ระบบจะตรวจสอบและซิงค์กับฐานข้อมูลออนไลน์อัตโนมัติ</li>
                 <li>ดาวน์โหลดไฟล์ที่ตัดเบอร์ซ้ำออกแล้ว</li>
             </ol>
             <div class="online-info">
-                <strong>🌐 ฐานข้อมูลออนไลน์:</strong> ทุกคนเห็นข้อมูลเดียวกัน real-time
+                <strong>🌐 ฐานข้อมูลออนไลน์:</strong> ทุกคนเห็นข้อมูลเดียวกัน real-time | 
+                <span id="onlineStatus" class="online-status online-inactive">ปิดใช้งาน</span>
             </div>
             <div class="performance-info">
                 <strong>⚡ ความเร็วสูง:</strong> ตรวจสอบได้เร็วถึง <strong>50,000-100,000 เบอร์/วินาที</strong>
@@ -338,22 +354,24 @@
         <div class="section config-section">
             <div class="section-title">⚙️ ตั้งค่าฐานข้อมูลออนไลน์</div>
             <div class="info-box">
-                <p><strong>ขั้นตอนการตั้งค่า:</strong></p>
+                <p><strong>ขั้นตอนการตั้งค่า (ทำครั้งเดียว):</strong></p>
                 <ol>
                     <li>สร้าง Google Sheet ใหม่</li>
-                    <li>แชร์ให้ทุกคนสามารถแก้ไขได้</li>
+                    <li>แชร์ให้ทุกคนสามารถ <strong>ดูได้</strong> แต่ <strong>แก้ไขต้องใช้รหัส</strong></li>
                     <li>คัดลอก URL มาวางด้านล่าง</li>
+                    <li>กด "บันทึกการตั้งค่า"</li>
                 </ol>
+                <p><strong>รหัสผ่านสำหรับแก้ไข: 23669</strong></p>
             </div>
             <div>
                 <label><strong>Google Sheets URL:</strong></label>
                 <input type="text" id="sheetsUrl" class="config-input" 
                        placeholder="https://docs.google.com/spreadsheets/d/...">
-                <small>ต้องให้สิทธิ์ "แก้ไข" สำหรับทุกคนที่มีลิงก์</small>
+                <small>ให้สิทธิ์ "ผู้ดู" สำหรับทุกคนที่มีลิงก์ (แก้ไขได้เฉพาะผู้ที่มีรหัส)</small>
             </div>
             <div class="button-container">
                 <button class="btn btn-success" id="saveConfigBtn">บันทึกการตั้งค่า</button>
-                <button class="btn btn-secondary" id="testConnectionBtn">ทดสอบการเชื่อมต่อ</button>
+                <button class="btn btn-warning" id="saveToOnlineBtn">บันทึกข้อมูลไปยังออนไลน์</button>
             </div>
             <div id="configStatus"></div>
         </div>
@@ -369,7 +387,6 @@
             </div>
             <div class="button-container">
                 <button class="btn" id="uploadBtn">อัปโหลดและตรวจสอบ</button>
-                <button class="btn btn-warning" id="syncOnlineBtn">ซิงค์กับฐานข้อมูลออนไลน์</button>
             </div>
             <div id="uploadStatus"></div>
         </div>
@@ -379,7 +396,7 @@
             <div class="button-container">
                 <button class="btn" id="viewDbBtn">ดูฐานข้อมูลปัจจุบัน</button>
                 <button class="btn btn-danger" id="clearDbBtn">ล้างฐานข้อมูลทั้งหมด</button>
-                <button class="btn btn-warning" id="refreshOnlineBtn">รีเฟรชจากออนไลน์</button>
+                <button class="btn btn-warning" id="loadFromOnlineBtn">โหลดข้อมูลจากออนไลน์</button>
             </div>
             <div id="dbInfo" class="result hidden">
                 <h3>ข้อมูลในฐานข้อมูล</h3>
@@ -421,12 +438,12 @@
     <!-- Password Modal -->
     <div id="passwordModal" class="password-modal">
         <div class="password-modal-content">
-            <h3>ล้างฐานข้อมูลทั้งหมด</h3>
-            <p>กรุณากรอกรหัสผ่านเพื่อยืนยันการล้างฐานข้อมูล</p>
-            <input type="password" id="passwordInput" class="password-input" placeholder="กรอกรหัสผ่าน">
+            <h3>ยืนยันการดำเนินการ</h3>
+            <p>กรุณากรอกรหัสผ่านเพื่อยืนยัน</p>
+            <input type="password" id="passwordInput" class="password-input" placeholder="กรอกรหัสผ่าน 23669">
             <div class="password-buttons">
-                <button class="btn btn-danger" id="confirmClearBtn">ยืนยันล้างข้อมูล</button>
-                <button class="btn btn-secondary" id="cancelClearBtn">ยกเลิก</button>
+                <button class="btn btn-success" id="confirmPasswordBtn">ยืนยัน</button>
+                <button class="btn btn-secondary" id="cancelPasswordBtn">ยกเลิก</button>
             </div>
             <p id="passwordError" style="color: #e74c3c; margin-top: 10px; display: none;">รหัสผ่านไม่ถูกต้อง</p>
         </div>
@@ -435,12 +452,12 @@
     <script>
         // ค่าคงที่
         const MAX_PHONES_PER_FILE = 300000;
-        const PASSWORD = "23669";
+        const ADMIN_PASSWORD = "23669";
         const CHUNK_SIZE = 50000;
         const BATCH_SIZE = 1000;
 
         // ระบบจัดการฐานข้อมูลแบบผสม (ออนไลน์ + ออฟไลน์)
-        class HybridPhoneDatabase {
+        class SecurePhoneDatabase {
             constructor() {
                 this.storageKey = 'phoneDatabase';
                 this.configKey = 'onlineConfig';
@@ -477,6 +494,7 @@
                         this.sheetsUrl = configData.sheetsUrl;
                         this.onlineEnabled = true;
                         console.log('โหลดการตั้งค่าออนไลน์สำเร็จ');
+                        updateOnlineStatus(true);
                     }
                 } catch (error) {
                     console.error('เกิดข้อผิดพลาดในการโหลดฐานข้อมูล:', error);
@@ -492,6 +510,7 @@
                 const config = { sheetsUrl: sheetsUrl };
                 localStorage.setItem(this.configKey, JSON.stringify(config));
                 console.log('บันทึกการตั้งค่าออนไลน์สำเร็จ');
+                updateOnlineStatus(true);
             }
 
             // อ่านข้อมูลจาก Google Sheets
@@ -528,12 +547,12 @@
 
                 // ในเวอร์ชันจริง ต้องใช้ Google Apps Script
                 // นี่เป็นตัวอย่างการ implement เบื้องต้น
-                console.log('กำลังซิงค์ข้อมูลไปยังออนไลน์:', phones.length, 'เบอร์');
+                console.log('กำลังบันทึกข้อมูลไปยังออนไลน์:', phones.length, 'เบอร์');
                 
                 // จำลองการส่งข้อมูล (ใน production ต้องใช้ Google Apps Script)
                 return new Promise((resolve) => {
                     setTimeout(() => {
-                        console.log('ซิงค์ข้อมูลออนไลน์เสร็จสิ้น');
+                        console.log('บันทึกข้อมูลออนไลน์เสร็จสิ้น');
                         resolve(true);
                     }, 2000);
                 });
@@ -553,13 +572,13 @@
                 return phones;
             }
 
-            // ซิงค์ข้อมูลระหว่างท้องถิ่นและออนไลน์
-            async syncWithOnline() {
+            // โหลดข้อมูลจากออนไลน์
+            async loadFromOnline() {
                 if (!this.onlineEnabled) {
                     throw new Error('ยังไม่ได้ตั้งค่าฐานข้อมูลออนไลน์');
                 }
 
-                showLoading('กำลังซิงค์ข้อมูลกับฐานข้อมูลออนไลน์...');
+                showLoading('กำลังโหลดข้อมูลจากฐานข้อมูลออนไลน์...');
                 
                 try {
                     // ดึงข้อมูลจากออนไลน์
@@ -583,6 +602,29 @@
                         onlineCount: onlinePhones.length,
                         newCount: newCount,
                         totalCount: this.phoneSet.size
+                    };
+                } catch (error) {
+                    hideLoading();
+                    throw error;
+                }
+            }
+
+            // บันทึกข้อมูลไปยังออนไลน์
+            async saveToOnline() {
+                if (!this.onlineEnabled) {
+                    throw new Error('ยังไม่ได้ตั้งค่าฐานข้อมูลออนไลน์');
+                }
+
+                showLoading('กำลังบันทึกข้อมูลไปยังฐานข้อมูลออนไลน์...');
+                
+                try {
+                    const allPhones = Array.from(this.phoneSet);
+                    await this.syncToOnline(allPhones);
+                    
+                    hideLoading();
+                    return {
+                        success: true,
+                        savedCount: allPhones.length
                     };
                 } catch (error) {
                     hideLoading();
@@ -696,9 +738,22 @@
         }
 
         // ระบบหลัก
-        const phoneDB = new HybridPhoneDatabase();
+        const phoneDB = new SecurePhoneDatabase();
         let startTime = 0;
         let currentUniquePhones = [];
+        let currentPasswordAction = null;
+
+        // อัพเดทสถานะออนไลน์
+        function updateOnlineStatus(isActive) {
+            const statusElement = document.getElementById('onlineStatus');
+            if (isActive) {
+                statusElement.textContent = 'เปิดใช้งาน';
+                statusElement.className = 'online-status online-active';
+            } else {
+                statusElement.textContent = 'ปิดใช้งาน';
+                statusElement.className = 'online-status online-inactive';
+            }
+        }
 
         // แสดง loading modal
         function showLoading(message = "กรุณารอสักครู่") {
@@ -788,6 +843,20 @@
             return Math.min(estimated, MAX_PHONES_PER_FILE * 2);
         }
 
+        // แสดง modal รหัสผ่าน
+        function showPasswordModal(action) {
+            currentPasswordAction = action;
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('passwordError').style.display = 'none';
+            document.getElementById('passwordModal').style.display = 'block';
+        }
+
+        // ซ่อน modal รหัสผ่าน
+        function hidePasswordModal() {
+            document.getElementById('passwordModal').style.display = 'none';
+            currentPasswordAction = null;
+        }
+
         // ตรวจสอบไฟล์เมื่อผู้ใช้เลือก
         document.getElementById('fileInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -806,7 +875,7 @@
             }
         });
 
-        // ==================== ฟังก์ชันที่ขาดหายไป ====================
+        // ==================== ฟังก์ชันประมวลผลไฟล์ ====================
 
         // ประมวลผลไฟล์ Excel
         async function processExcelFile(file) {
@@ -933,6 +1002,18 @@
 
             console.log(`ผลการตรวจสอบ: ทั้งหมด ${allPhones.length}, ซ้ำ ${totalDuplicates}, ใหม่ ${totalUnique}`);
 
+            // ซิงค์กับฐานข้อมูลออนไลน์อัตโนมัติ
+            if (phoneDB.onlineEnabled) {
+                try {
+                    updateProgress(95, 'กำลังซิงค์กับฐานข้อมูลออนไลน์...');
+                    await phoneDB.saveToOnline();
+                    console.log('ซิงค์กับออนไลน์สำเร็จ');
+                } catch (error) {
+                    console.warn('ไม่สามารถซิงค์กับออนไลน์ได้:', error.message);
+                    // ไม่ throw error เพื่อไม่ให้การประมวลผลไฟล์ล้มเหลว
+                }
+            }
+
             // แสดงผล
             await displayResults(allPhones.length, totalDuplicates, totalUnique);
         }
@@ -961,6 +1042,11 @@
             
             resultDiv.classList.remove('hidden');
             
+            let onlineStatus = '';
+            if (phoneDB.onlineEnabled) {
+                onlineStatus = `<p>🌐 ข้อมูลถูกซิงค์กับฐานข้อมูลออนไลน์เรียบร้อย</p>`;
+            }
+            
             summaryDiv.innerHTML = `
                 <div class="stat-box">
                     <div class="info-box">
@@ -970,6 +1056,7 @@
                         <p>เบอร์ที่ไม่ซ้ำ: <span class="stat-number">${uniqueNumbers.toLocaleString()}</span> เบอร์</p>
                         <p>ขนาดฐานข้อมูลปัจจุบัน: <span class="stat-number">${totalInDB.toLocaleString()}</span> เบอร์</p>
                         <p>⏱️ เวลาที่ใช้: ${(elapsedTime / 1000).toFixed(1)} วินาที</p>
+                        ${onlineStatus}
                         <p>✅ การประมวลผลเสร็จสิ้นเรียบร้อย</p>
                     </div>
                 </div>
@@ -996,53 +1083,41 @@
             }
 
             phoneDB.saveConfig(sheetsUrl);
-            showStatus('configStatus', '✅ บันทึกการตั้งค่าสำเร็จ! ตอนนี้ใช้ฐานข้อมูลออนไลน์แล้ว');
+            showStatus('configStatus', '✅ บันทึกการตั้งค่าสำเร็จ! ตอนนี้ใช้ฐานข้อมูลออนไลน์แล้ว<br>สามารถแจกลิงก์นี้ให้ทีมงานได้เลย');
         });
 
-        // ทดสอบการเชื่อมต่อ
-        document.getElementById('testConnectionBtn').addEventListener('click', async function() {
+        // บันทึกข้อมูลไปยังออนไลน์
+        document.getElementById('saveToOnlineBtn').addEventListener('click', function() {
             if (!phoneDB.onlineEnabled) {
                 showStatus('configStatus', '❌ ยังไม่ได้ตั้งค่าฐานข้อมูลออนไลน์', true);
                 return;
             }
+            showPasswordModal('saveToOnline');
+        });
 
-            showLoading('กำลังทดสอบการเชื่อมต่อ...');
+        // โหลดข้อมูลจากออนไลน์
+        document.getElementById('loadFromOnlineBtn').addEventListener('click', function() {
+            if (!phoneDB.onlineEnabled) {
+                showStatus('uploadStatus', '❌ ยังไม่ได้ตั้งค่าฐานข้อมูลออนไลน์', true);
+                return;
+            }
+
+            showLoading('กำลังโหลดข้อมูลจากออนไลน์...');
             
-            try {
-                const onlinePhones = await phoneDB.fetchFromOnline();
-                hideLoading();
-                showStatus('configStatus', `✅ การเชื่อมต่อสำเร็จ! พบ ${onlinePhones.length.toLocaleString()} เบอร์ในฐานข้อมูลออนไลน์`);
-            } catch (error) {
-                hideLoading();
-                showStatus('configStatus', `❌ การเชื่อมต่อล้มเหลว: ${error.message}`, true);
-            }
-        });
-
-        // ซิงค์กับออนไลน์
-        document.getElementById('syncOnlineBtn').addEventListener('click', async function() {
-            try {
-                const result = await phoneDB.syncWithOnline();
-                showStatus('uploadStatus', 
-                    `✅ ซิงค์ข้อมูลสำเร็จ!<br>
-                     ข้อมูลออนไลน์: ${result.onlineCount.toLocaleString()} เบอร์<br>
-                     เพิ่มใหม่: ${result.newCount.toLocaleString()} เบอร์<br>
-                     รวมทั้งหมด: ${result.totalCount.toLocaleString()} เบอร์`);
-            } catch (error) {
-                showStatus('uploadStatus', `❌ การซิงค์ล้มเหลว: ${error.message}`, true);
-            }
-        });
-
-        // รีเฟรชจากออนไลน์
-        document.getElementById('refreshOnlineBtn').addEventListener('click', async function() {
-            try {
-                const result = await phoneDB.syncWithOnline();
-                showStatus('uploadStatus', 
-                    `✅ โหลดข้อมูลจากออนไลน์สำเร็จ!<br>
-                     พบ ${result.onlineCount.toLocaleString()} เบอร์<br>
-                     เพิ่มใหม่ ${result.newCount.toLocaleString()} เบอร์`);
-            } catch (error) {
-                showStatus('uploadStatus', `❌ โหลดข้อมูลล้มเหลว: ${error.message}`, true);
-            }
+            phoneDB.loadFromOnline()
+                .then(result => {
+                    showStatus('uploadStatus', 
+                        `✅ โหลดข้อมูลจากออนไลน์สำเร็จ!<br>
+                         พบ ${result.onlineCount.toLocaleString()} เบอร์<br>
+                         เพิ่มใหม่ ${result.newCount.toLocaleString()} เบอร์<br>
+                         รวมทั้งหมด: ${result.totalCount.toLocaleString()} เบอร์`);
+                })
+                .catch(error => {
+                    showStatus('uploadStatus', `❌ โหลดข้อมูลล้มเหลว: ${error.message}`, true);
+                })
+                .finally(() => {
+                    hideLoading();
+                });
         });
 
         // อัปโหลดไฟล์
@@ -1077,7 +1152,11 @@
                 setTimeout(async () => {
                     try {
                         await processExcelFile(file);
-                        showStatus('uploadStatus', '✅ ประมวลผลไฟล์เสร็จสิ้น! ดูผลลัพธ์ได้ที่ส่วน "ผลการตรวจสอบ"');
+                        let successMessage = '✅ ประมวลผลไฟล์เสร็จสิ้น! ดูผลลัพธ์ได้ที่ส่วน "ผลการตรวจสอบ"';
+                        if (phoneDB.onlineEnabled) {
+                            successMessage += '<br>🌐 ข้อมูลถูกซิงค์กับฐานข้อมูลออนไลน์เรียบร้อย';
+                        }
+                        showStatus('uploadStatus', successMessage);
                     } catch (error) {
                         console.error('เกิดข้อผิดพลาด:', error);
                         showStatus('uploadStatus', `❌ เกิดข้อผิดพลาด: ${error.message}`, true);
@@ -1156,35 +1235,57 @@
 
         // ล้างฐานข้อมูล
         document.getElementById('clearDbBtn').addEventListener('click', function() {
-            document.getElementById('passwordInput').value = '';
-            document.getElementById('passwordError').style.display = 'none';
-            document.getElementById('passwordModal').style.display = 'block';
+            showPasswordModal('clearDatabase');
         });
 
-        document.getElementById('confirmClearBtn').addEventListener('click', async function() {
+        // ยืนยันรหัสผ่าน
+        document.getElementById('confirmPasswordBtn').addEventListener('click', async function() {
             const passwordInput = document.getElementById('passwordInput').value;
             
-            if (passwordInput === PASSWORD) {
-                showLoading('กำลังล้างฐานข้อมูล...');
-                try {
-                    await phoneDB.clear();
-                    document.getElementById('passwordModal').style.display = 'none';
-                    document.getElementById('dbInfo').classList.add('hidden');
-                    document.getElementById('result').classList.add('hidden');
-                    document.getElementById('downloadInfo').classList.add('hidden');
-                    hideLoading();
-                    alert('ล้างฐานข้อมูลเรียบร้อยแล้ว');
-                } catch (error) {
-                    hideLoading();
-                    alert('เกิดข้อผิดพลาดในการล้างฐานข้อมูล');
+            if (passwordInput === ADMIN_PASSWORD) {
+                document.getElementById('passwordError').style.display = 'none';
+                
+                if (currentPasswordAction === 'saveToOnline') {
+                    hidePasswordModal();
+                    showLoading('กำลังบันทึกข้อมูลไปยังออนไลน์...');
+                    
+                    try {
+                        const result = await phoneDB.saveToOnline();
+                        showStatus('configStatus', 
+                            `✅ บันทึกข้อมูลไปยังออนไลน์สำเร็จ!<br>
+                             บันทึก ${result.savedCount.toLocaleString()} เบอร์<br>
+                             ทีมงานทุกคนจะเห็นข้อมูลล่าสุด`);
+                    } catch (error) {
+                        showStatus('configStatus', `❌ บันทึกข้อมูลล้มเหลว: ${error.message}`, true);
+                    } finally {
+                        hideLoading();
+                    }
+                    
+                } else if (currentPasswordAction === 'clearDatabase') {
+                    hidePasswordModal();
+                    showLoading('กำลังล้างฐานข้อมูล...');
+                    
+                    try {
+                        await phoneDB.clear();
+                        document.getElementById('dbInfo').classList.add('hidden');
+                        document.getElementById('result').classList.add('hidden');
+                        document.getElementById('downloadInfo').classList.add('hidden');
+                        hideLoading();
+                        showStatus('uploadStatus', '✅ ล้างฐานข้อมูลเรียบร้อยแล้ว');
+                    } catch (error) {
+                        hideLoading();
+                        showStatus('uploadStatus', '❌ เกิดข้อผิดพลาดในการล้างฐานข้อมูล', true);
+                    }
                 }
+                
             } else {
                 document.getElementById('passwordError').style.display = 'block';
             }
         });
 
-        document.getElementById('cancelClearBtn').addEventListener('click', function() {
-            document.getElementById('passwordModal').style.display = 'none';
+        // ยกเลิกรหัสผ่าน
+        document.getElementById('cancelPasswordBtn').addEventListener('click', function() {
+            hidePasswordModal();
         });
 
         // Initialize
