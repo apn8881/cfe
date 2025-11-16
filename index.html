@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>โปรแกรมเช็คเบอร์โทรซ้ำ (ฐานข้อมูลออนไลน์)</title>
+    <title>โปรแกรมเช็คเบอร์โทรซ้ำ (ฐานข้อมูล GitHub)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
+        /* CSS styles remain the same as previous version */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
@@ -181,7 +182,6 @@
             margin: 10px 0;
             text-align: center;
         }
-        /* Loading Modal */
         .modal {
             display: none;
             position: fixed;
@@ -293,22 +293,6 @@
             margin: 10px 0;
             font-size: 0.9em;
         }
-        .config-section {
-            background-color: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 5px;
-            padding: 15px;
-            margin: 10px 0;
-        }
-        .config-input {
-            width: 100%;
-            padding: 8px;
-            margin: 5px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            box-sizing: border-box;
-        }
         .online-status {
             display: inline-block;
             padding: 4px 8px;
@@ -324,23 +308,100 @@
             background-color: #f8d7da;
             color: #721c24;
         }
+        .github-features {
+            background-color: #f6f8fa;
+            border: 1px solid #d0d7de;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .feature-item {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #238636;
+        }
+        .admin-section {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .fix-section {
+            background-color: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .manual-setup {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+        }
+        .config-input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .header-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>โปรแกรมเช็คเบอร์โทรซ้ำ (ฐานข้อมูลออนไลน์)</h1>
+        <div class="header-buttons">
+            <h1>โปรแกรมเช็คเบอร์โทรซ้ำ (ฐานข้อมูล GitHub)</h1>
+            <button class="btn btn-secondary" id="settingsBtn">⚙️ การตั้งค่า</button>
+        </div>
         
         <div class="instructions">
             <h3>วิธีใช้งาน:</h3>
             <ol>
-                <li>ตั้งค่าฐานข้อมูลออนไลน์ (ครั้งแรกเท่านั้น)</li>
                 <li>อัปโหลดไฟล์ Excel เพื่อตรวจสอบเบอร์ซ้ำ</li>
-                <li>ระบบจะตรวจสอบและซิงค์กับฐานข้อมูลออนไลน์อัตโนมัติ</li>
+                <li>ระบบจะตรวจสอบและซิงค์กับฐานข้อมูล GitHub อัตโนมัติ</li>
                 <li>ดาวน์โหลดไฟล์ที่ตัดเบอร์ซ้ำออกแล้ว</li>
             </ol>
             <div class="online-info">
-                <strong>🌐 ฐานข้อมูลออนไลน์:</strong> ทุกคนเห็นข้อมูลเดียวกัน real-time | 
-                <span id="onlineStatus" class="online-status online-inactive">ปิดใช้งาน</span>
+                <strong>🌐 ฐานข้อมูล GitHub:</strong> 
+                <span id="onlineStatus" class="online-status online-active">เปิดใช้งาน</span> | 
+                <span id="repoInfo">apn8881/datacfe</span>
+            </div>
+            <div class="github-features">
+                <strong>🚀 GitHub Database Features:</strong>
+                <div class="feature-list">
+                    <div class="feature-item">✅ Real-time Sync</div>
+                    <div class="feature-item">✅ Version Control</div>
+                    <div class="feature-item">✅ Backup อัตโนมัติ</div>
+                    <div class="feature-item">✅ Team Collaboration</div>
+                </div>
             </div>
             <div class="performance-info">
                 <strong>⚡ ความเร็วสูง:</strong> ตรวจสอบได้เร็วถึง <strong>50,000-100,000 เบอร์/วินาที</strong>
@@ -350,28 +411,58 @@
             </div>
         </div>
 
-        <!-- ส่วนตั้งค่า Google Sheets -->
-        <div class="section config-section">
-            <div class="section-title">⚙️ ตั้งค่าฐานข้อมูลออนไลน์</div>
-            <div class="info-box">
-                <p><strong>ขั้นตอนการตั้งค่า (ทำครั้งเดียว):</strong></p>
-                <ol>
-                    <li>สร้าง Google Sheet ใหม่</li>
-                    <li>แชร์ให้ทุกคนสามารถ <strong>ดูได้</strong> แต่ <strong>แก้ไขต้องใช้รหัส</strong></li>
-                    <li>คัดลอก URL มาวางด้านล่าง</li>
-                    <li>กด "บันทึกการตั้งค่า"</li>
-                </ol>
-                <p><strong>รหัสผ่านสำหรับแก้ไข: 23669</strong></p>
-            </div>
-            <div>
-                <label><strong>Google Sheets URL:</strong></label>
-                <input type="text" id="sheetsUrl" class="config-input" 
-                       placeholder="https://docs.google.com/spreadsheets/d/...">
-                <small>ให้สิทธิ์ "ผู้ดู" สำหรับทุกคนที่มีลิงก์ (แก้ไขได้เฉพาะผู้ที่มีรหัส)</small>
-            </div>
+        <!-- ส่วนแก้ไขปัญหา -->
+        <div class="section fix-section">
+            <div class="section-title">🔧 แก้ไขปัญหาฐานข้อมูล GitHub</div>
+            <p><strong>ปัญหา:</strong> ไม่สามารถสร้างไฟล์ใน GitHub repository ได้</p>
             <div class="button-container">
-                <button class="btn btn-success" id="saveConfigBtn">บันทึกการตั้งค่า</button>
-                <button class="btn btn-warning" id="saveToOnlineBtn">บันทึกข้อมูลไปยังออนไลน์</button>
+                <button class="btn btn-success" id="initDatabaseBtn">ลองสร้างไฟล์ฐานข้อมูลใหม่</button>
+                <button class="btn btn-warning" id="testConnectionBtn">ทดสอบการเชื่อมต่อ GitHub</button>
+                <button class="btn" id="viewOnlineBtn">ดู Repository ใน GitHub</button>
+            </div>
+            <div id="fixStatus"></div>
+        </div>
+
+        <!-- ส่วนตั้งค่าด้วยมือ -->
+        <div class="section manual-setup">
+            <div class="section-title">📝 ตั้งค่าด้วยมือ (ถ้าอัตโนมัติไม่ทำงาน)</div>
+            <p><strong>ขั้นตอนที่ 1:</strong> ไปที่ Repository ของคุณ</p>
+            <div class="button-container">
+                <a href="https://github.com/apn8881/datacfe" target="_blank" class="btn">
+                    เปิด GitHub Repository
+                </a>
+            </div>
+            
+            <p><strong>ขั้นตอนที่ 2:</strong> สร้างไฟล์ data/phones.json ด้วยมือ</p>
+            <ol>
+                <li>คลิกปุ่ม "Add file" → "Create new file"</li>
+                <li>พิมพ์ชื่อไฟล์: <code>data/phones.json</code></li>
+                <li>คัดลอกเนื้อหาด้านล่างไปวาง:</li>
+            </ol>
+            
+            <div class="code-block">
+[]
+            </div>
+            
+            <p><strong>ขั้นตอนที่ 3:</strong> Commit ไฟล์</p>
+            <ul>
+                <li>ใส่ Commit message: "Initialize phone database"</li>
+                <li>เลือก "Commit directly to the main branch"</li>
+                <li>คลิก "Commit new file"</li>
+            </ul>
+            
+            <div class="button-container">
+                <button class="btn btn-success" id="checkManualSetupBtn">ตรวจสอบการตั้งค่า</button>
+            </div>
+        </div>
+
+        <!-- ส่วนสำหรับ Admin -->
+        <div class="section admin-section">
+            <div class="section-title">⚙️ การจัดการฐานข้อมูล</div>
+            <div class="button-container">
+                <button class="btn btn-warning" id="saveToOnlineBtn">ซิงค์ข้อมูลไปยัง GitHub</button>
+                <button class="btn btn-danger" id="clearDbBtn">ล้างฐานข้อมูลทั้งหมด</button>
+                <button class="btn btn-warning" id="loadFromOnlineBtn">โหลดข้อมูลจาก GitHub</button>
             </div>
             <div id="configStatus"></div>
         </div>
@@ -395,8 +486,7 @@
             <div class="section-title">2. ฐานข้อมูลเบอร์โทรศัพท์</div>
             <div class="button-container">
                 <button class="btn" id="viewDbBtn">ดูฐานข้อมูลปัจจุบัน</button>
-                <button class="btn btn-danger" id="clearDbBtn">ล้างฐานข้อมูลทั้งหมด</button>
-                <button class="btn btn-warning" id="loadFromOnlineBtn">โหลดข้อมูลจากออนไลน์</button>
+                <button class="btn" id="exportDbBtn">ส่งออกฐานข้อมูล</button>
             </div>
             <div id="dbInfo" class="result hidden">
                 <h3>ข้อมูลในฐานข้อมูล</h3>
@@ -449,15 +539,100 @@
         </div>
     </div>
 
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h3>⚙️ การตั้งค่าระบบ</h3>
+            <p>กรุณากรอกรหัสผ่านเพื่อเข้าสู่การตั้งค่า</p>
+            <input type="password" id="settingsPasswordInput" class="password-input" placeholder="กรอกรหัสผ่าน 23669">
+            <div class="password-buttons">
+                <button class="btn btn-success" id="confirmSettingsPasswordBtn">ยืนยัน</button>
+                <button class="btn btn-secondary" id="cancelSettingsPasswordBtn">ยกเลิก</button>
+            </div>
+            <p id="settingsPasswordError" style="color: #e74c3c; margin-top: 10px; display: none;">รหัสผ่านไม่ถูกต้อง</p>
+        </div>
+    </div>
+
+    <!-- Settings Content Modal -->
+    <div id="settingsContentModal" class="modal">
+        <div class="modal-content" style="max-width: 600px; text-align: left;">
+            <h3>⚙️ การตั้งค่าระบบ</h3>
+            
+            <div class="section">
+                <div class="section-title">การตั้งค่าฐานข้อมูล GitHub</div>
+                <div>
+                    <label><strong>GitHub Username:</strong></label>
+                    <input type="text" id="settingsGithubUsername" class="config-input" value="apn8881">
+                </div>
+
+                <div>
+                    <label><strong>Repository Name:</strong></label>
+                    <input type="text" id="settingsRepoName" class="config-input" value="datacfe">
+                </div>
+
+                <div>
+                    <label><strong>Personal Access Token:</strong></label>
+                    <input type="password" id="settingsGithubToken" class="config-input" value="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">
+                    <small>ได้จาก GitHub Settings → Developer settings</small>
+                </div>
+
+                <div>
+                    <label><strong>File Path:</strong></label>
+                    <input type="text" id="settingsFilePath" class="config-input" value="data/phones.json">
+                    <small>เส้นทางไฟล์ใน repository เช่น data/phones.json</small>
+                </div>
+
+                <div class="button-container">
+                    <button class="btn btn-success" id="saveSettingsBtn">บันทึกการตั้งค่า</button>
+                    <button class="btn btn-warning" id="testSettingsBtn">ทดสอบการเชื่อมต่อ</button>
+                </div>
+                <div id="settingsStatus"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">การตั้งค่าระบบ</div>
+                <div>
+                    <label><strong>รหัสผ่านผู้ดูแลระบบ:</strong></label>
+                    <input type="password" id="settingsAdminPassword" class="config-input" value="23669">
+                </div>
+
+                <div>
+                    <label><strong>จำนวนเบอร์สูงสุดต่อไฟล์:</strong></label>
+                    <input type="number" id="settingsMaxPhones" class="config-input" value="300000">
+                </div>
+
+                <div class="button-container">
+                    <button class="btn btn-success" id="saveSystemSettingsBtn">บันทึกการตั้งค่าระบบ</button>
+                    <button class="btn btn-secondary" id="resetSettingsBtn">รีเซ็ตการตั้งค่า</button>
+                </div>
+            </div>
+
+            <div class="button-container" style="margin-top: 20px;">
+                <button class="btn btn-secondary" id="closeSettingsBtn">ปิดการตั้งค่า</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // ค่าคงที่
-        const MAX_PHONES_PER_FILE = 300000;
+        // ค่าคงที่และ Configuration
+        const DEFAULT_MAX_PHONES_PER_FILE = 300000;
         const ADMIN_PASSWORD = "23669";
         const CHUNK_SIZE = 50000;
         const BATCH_SIZE = 1000;
 
-        // ระบบจัดการฐานข้อมูลแบบผสม (ออนไลน์ + ออฟไลน์)
-        class SecurePhoneDatabase {
+        // ตัวแปรระบบ
+        let MAX_PHONES_PER_FILE = DEFAULT_MAX_PHONES_PER_FILE;
+
+        // GitHub Configuration
+        const GITHUB_CONFIG = {
+            username: "apn8881",
+            repoName: "datacfe",
+            token: "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",
+            filePath: "data/phones.json"
+        };
+
+        // ระบบจัดการฐานข้อมูลออนไลน์ด้วย GitHub
+        class GitHubPhoneDatabase {
             constructor() {
                 this.storageKey = 'phoneDatabase';
                 this.configKey = 'onlineConfig';
@@ -465,9 +640,15 @@
                 this.phoneSet = new Set();
                 this.pendingAdds = new Set();
                 this.lastUploadUniquePhones = [];
-                this.onlineEnabled = false;
-                this.sheetsUrl = '';
+                this.onlineEnabled = true;
                 this.isSaving = false;
+                
+                // ใช้ค่าจาก configuration
+                this.githubUsername = GITHUB_CONFIG.username;
+                this.repoName = GITHUB_CONFIG.repoName;
+                this.githubToken = GITHUB_CONFIG.token;
+                this.filePath = GITHUB_CONFIG.filePath;
+                
                 this.load();
             }
 
@@ -487,15 +668,9 @@
                         this.lastUploadUniquePhones = JSON.parse(lastUpload);
                     }
 
-                    // โหลดการตั้งค่าออนไลน์
-                    const config = localStorage.getItem(this.configKey);
-                    if (config) {
-                        const configData = JSON.parse(config);
-                        this.sheetsUrl = configData.sheetsUrl;
-                        this.onlineEnabled = true;
-                        console.log('โหลดการตั้งค่าออนไลน์สำเร็จ');
-                        updateOnlineStatus(true);
-                    }
+                    console.log('โหลดการตั้งค่า GitHub สำเร็จ');
+                    updateOnlineStatus(true);
+                    
                 } catch (error) {
                     console.error('เกิดข้อผิดพลาดในการโหลดฐานข้อมูล:', error);
                     this.phoneSet = new Set();
@@ -503,88 +678,217 @@
                 }
             }
 
-            // บันทึกการตั้งค่าออนไลน์
-            saveConfig(sheetsUrl) {
-                this.sheetsUrl = sheetsUrl;
-                this.onlineEnabled = true;
-                const config = { sheetsUrl: sheetsUrl };
+            // อัพเดทการตั้งค่า
+            updateConfig(newConfig) {
+                this.githubUsername = newConfig.username;
+                this.repoName = newConfig.repoName;
+                this.githubToken = newConfig.token;
+                this.filePath = newConfig.filePath;
+                
+                // บันทึกการตั้งค่าใหม่
+                const config = { 
+                    githubUsername: newConfig.username,
+                    repoName: newConfig.repoName,
+                    githubToken: newConfig.token,
+                    filePath: newConfig.filePath
+                };
                 localStorage.setItem(this.configKey, JSON.stringify(config));
-                console.log('บันทึกการตั้งค่าออนไลน์สำเร็จ');
+                
+                console.log('อัพเดทการตั้งค่า GitHub สำเร็จ');
                 updateOnlineStatus(true);
             }
 
-            // อ่านข้อมูลจาก Google Sheets
+            // สร้าง headers สำหรับ GitHub API
+            getHeaders() {
+                return {
+                    'Authorization': `token ${this.githubToken}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                };
+            }
+
+            // อ่านข้อมูลจาก GitHub
             async fetchFromOnline() {
-                if (!this.onlineEnabled || !this.sheetsUrl) {
-                    throw new Error('ยังไม่ได้ตั้งค่าฐานข้อมูลออนไลน์');
+                if (!this.onlineEnabled) {
+                    throw new Error('ฐานข้อมูล GitHub ถูกปิดใช้งาน');
                 }
 
                 try {
-                    // แปลง Google Sheets URL เป็น CSV export URL
-                    const csvUrl = this.sheetsUrl.replace('/edit?', '/export?format=csv&');
-                    const response = await fetch(csvUrl);
+                    const url = `https://api.github.com/repos/${this.githubUsername}/${this.repoName}/contents/${this.filePath}`;
+                    const response = await fetch(url, {
+                        headers: this.getHeaders()
+                    });
                     
                     if (!response.ok) {
-                        throw new Error('ไม่สามารถเชื่อมต่อกับ Google Sheets ได้');
+                        if (response.status === 404) {
+                            console.log('ไฟล์ยังไม่มีใน GitHub');
+                            return [];
+                        }
+                        const errorData = await response.json();
+                        throw new Error(`GitHub API Error: ${errorData.message} (Status: ${response.status})`);
                     }
 
-                    const csvText = await response.text();
-                    const onlinePhones = this.parseCSV(csvText);
+                    const data = await response.json();
                     
-                    console.log('โหลดข้อมูลจากออนไลน์สำเร็จ:', onlinePhones.length, 'เบอร์');
-                    return onlinePhones;
+                    if (!data.content || data.content === '') {
+                        console.log('ไฟล์มีอยู่แต่ไม่มีข้อมูล');
+                        return [];
+                    }
+                    
+                    const content = atob(data.content.replace(/\n/g, ''));
+                    
+                    if (!content || content.trim() === '') {
+                        console.log('ไฟล์ว่างเปล่า');
+                        return [];
+                    }
+                    
+                    try {
+                        const phones = JSON.parse(content);
+                        console.log('โหลดข้อมูลจาก GitHub สำเร็จ:', phones.length, 'เบอร์');
+                        return Array.isArray(phones) ? phones : [];
+                    } catch (parseError) {
+                        console.error('รูปแบบ JSON ไม่ถูกต้อง:', parseError);
+                        return [];
+                    }
+                    
                 } catch (error) {
-                    console.error('เกิดข้อผิดพลาดในการโหลดข้อมูลออนไลน์:', error);
+                    console.error('เกิดข้อผิดพลาดในการโหลดข้อมูลจาก GitHub:', error);
                     throw error;
                 }
             }
 
-            // ส่งข้อมูลไปยัง Google Sheets (ใช้ Google Apps Script)
-            async syncToOnline(phones) {
-                if (!this.onlineEnabled || !this.sheetsUrl) {
-                    throw new Error('ยังไม่ได้ตั้งค่าฐานข้อมูลออนไลน์');
-                }
+            // สร้างไฟล์ฐานข้อมูลใหม่
+            async initializeDatabase() {
+                try {
+                    // ตรวจสอบสิทธิ์การเขียนก่อน
+                    const testResponse = await fetch(
+                        `https://api.github.com/repos/${this.githubUsername}/${this.repoName}`,
+                        { headers: this.getHeaders() }
+                    );
+                    
+                    if (!testResponse.ok) {
+                        const errorData = await testResponse.json();
+                        throw new Error(`ไม่สามารถเข้าถึง repository: ${errorData.message}`);
+                    }
 
-                // ในเวอร์ชันจริง ต้องใช้ Google Apps Script
-                // นี่เป็นตัวอย่างการ implement เบื้องต้น
-                console.log('กำลังบันทึกข้อมูลไปยังออนไลน์:', phones.length, 'เบอร์');
-                
-                // จำลองการส่งข้อมูล (ใน production ต้องใช้ Google Apps Script)
-                return new Promise((resolve) => {
-                    setTimeout(() => {
-                        console.log('บันทึกข้อมูลออนไลน์เสร็จสิ้น');
-                        resolve(true);
-                    }, 2000);
-                });
+                    // พยายามสร้างไฟล์
+                    const initialData = [];
+                    const content = btoa(JSON.stringify(initialData, null, 2));
+                    const url = `https://api.github.com/repos/${this.githubUsername}/${this.repoName}/contents/${this.filePath}`;
+                    
+                    // ตรวจสอบว่าไฟล์มีอยู่แล้วหรือไม่
+                    let currentSha = null;
+                    try {
+                        const currentFileResponse = await fetch(url, {
+                            headers: this.getHeaders()
+                        });
+                        if (currentFileResponse.ok) {
+                            const currentFile = await currentFileResponse.json();
+                            currentSha = currentFile.sha;
+                        }
+                    } catch (error) {
+                        // ไฟล์ยังไม่มี
+                    }
+
+                    const response = await fetch(url, {
+                        method: 'PUT',
+                        headers: this.getHeaders(),
+                        body: JSON.stringify({
+                            message: `Initialize phone database - ${new Date().toLocaleString()}`,
+                            content: content,
+                            sha: currentSha
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        let errorMessage = `ไม่สามารถสร้างไฟล์ฐานข้อมูลได้: ${errorData.message}`;
+                        
+                        if (errorData.message.includes('push')) {
+                            errorMessage += '\n\n⚠️ ปัญหาสิทธิ์การเขียน: Token อาจไม่มีสิทธิ์เขียนไฟล์ใน repository นี้';
+                        } else if (errorData.message.includes('exist')) {
+                            errorMessage += '\n\nℹ️ ไฟล์มีอยู่แล้ว แต่ไม่สามารถอ่านได้';
+                        }
+                        
+                        throw new Error(errorMessage);
+                    }
+
+                    const result = await response.json();
+                    console.log('สร้างไฟล์ฐานข้อมูลใหม่สำเร็จ:', result);
+                    return { 
+                        success: true,
+                        commitUrl: result.commit.html_url
+                    };
+                } catch (error) {
+                    console.error('เกิดข้อผิดพลาดในการสร้างไฟล์ฐานข้อมูล:', error);
+                    throw error;
+                }
             }
 
-            parseCSV(csvText) {
-                const phones = [];
-                const lines = csvText.split('\n');
-                
-                for (const line of lines) {
-                    const phone = line.trim();
-                    if (phone && phone.length >= 9) {
-                        phones.push(phone);
-                    }
+            // ส่งข้อมูลไปยัง GitHub
+            async syncToOnline(phones) {
+                if (!this.onlineEnabled) {
+                    throw new Error('ฐานข้อมูล GitHub ถูกปิดใช้งาน');
                 }
-                
-                return phones;
+
+                try {
+                    // รับ SHA ของไฟล์ปัจจุบัน (ถ้ามี)
+                    let currentSha = null;
+                    try {
+                        const currentFileResponse = await fetch(
+                            `https://api.github.com/repos/${this.githubUsername}/${this.repoName}/contents/${this.filePath}`,
+                            { headers: this.getHeaders() }
+                        );
+                        if (currentFileResponse.ok) {
+                            const currentFile = await currentFileResponse.json();
+                            currentSha = currentFile.sha;
+                        }
+                    } catch (error) {
+                        // ไฟล์ยังไม่มี
+                    }
+
+                    const content = btoa(JSON.stringify(phones, null, 2));
+                    const url = `https://api.github.com/repos/${this.githubUsername}/${this.repoName}/contents/${this.filePath}`;
+                    
+                    const response = await fetch(url, {
+                        method: 'PUT',
+                        headers: this.getHeaders(),
+                        body: JSON.stringify({
+                            message: `Update phone database - ${new Date().toLocaleString()}`,
+                            content: content,
+                            sha: currentSha
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`ไม่สามารถบันทึกข้อมูล GitHub ได้: ${errorData.message}`);
+                    }
+
+                    const data = await response.json();
+                    console.log('บันทึกข้อมูล GitHub สำเร็จ:', phones.length, 'เบอร์');
+                    return { 
+                        success: true, 
+                        savedCount: phones.length,
+                        commitUrl: data.commit.html_url 
+                    };
+                } catch (error) {
+                    console.error('เกิดข้อผิดพลาดในการบันทึกข้อมูล GitHub:', error);
+                    throw error;
+                }
             }
 
             // โหลดข้อมูลจากออนไลน์
             async loadFromOnline() {
                 if (!this.onlineEnabled) {
-                    throw new Error('ยังไม่ได้ตั้งค่าฐานข้อมูลออนไลน์');
+                    throw new Error('ฐานข้อมูล GitHub ถูกปิดใช้งาน');
                 }
 
-                showLoading('กำลังโหลดข้อมูลจากฐานข้อมูลออนไลน์...');
+                showLoading('กำลังโหลดข้อมูลจาก GitHub...');
                 
                 try {
-                    // ดึงข้อมูลจากออนไลน์
                     const onlinePhones = await this.fetchFromOnline();
                     
-                    // รวมข้อมูล
                     let newCount = 0;
                     for (const phone of onlinePhones) {
                         if (!this.phoneSet.has(phone)) {
@@ -593,7 +897,6 @@
                         }
                     }
 
-                    // บันทึกข้อมูลท้องถิ่น
                     await this.save();
 
                     hideLoading();
@@ -612,19 +915,20 @@
             // บันทึกข้อมูลไปยังออนไลน์
             async saveToOnline() {
                 if (!this.onlineEnabled) {
-                    throw new Error('ยังไม่ได้ตั้งค่าฐานข้อมูลออนไลน์');
+                    throw new Error('ฐานข้อมูล GitHub ถูกปิดใช้งาน');
                 }
 
-                showLoading('กำลังบันทึกข้อมูลไปยังฐานข้อมูลออนไลน์...');
+                showLoading('กำลังบันทึกข้อมูลไปยัง GitHub...');
                 
                 try {
                     const allPhones = Array.from(this.phoneSet);
-                    await this.syncToOnline(allPhones);
+                    const result = await this.syncToOnline(allPhones);
                     
                     hideLoading();
                     return {
                         success: true,
-                        savedCount: allPhones.length
+                        savedCount: result.savedCount,
+                        commitUrl: result.commitUrl
                     };
                 } catch (error) {
                     hideLoading();
@@ -632,6 +936,42 @@
                 }
             }
 
+            // ทดสอบการเชื่อมต่อ
+            async testConnection() {
+                if (!this.onlineEnabled) {
+                    throw new Error('ฐานข้อมูล GitHub ถูกปิดใช้งาน');
+                }
+
+                try {
+                    const onlinePhones = await this.fetchFromOnline();
+                    return {
+                        success: true,
+                        count: onlinePhones.length,
+                        message: onlinePhones.length === 0 ? 
+                            '✅ การเชื่อมต่อสำเร็จ! (ไฟล์ว่างเปล่า)' : 
+                            `✅ การเชื่อมต่อสำเร็จ! พบ ${onlinePhones.length} เบอร์`
+                    };
+                } catch (error) {
+                    throw error;
+                }
+            }
+
+            // รับ URL สำหรับดูข้อมูลใน GitHub
+            getOnlineUrl() {
+                if (!this.onlineEnabled) {
+                    return null;
+                }
+                return `https://github.com/${this.githubUsername}/${this.repoName}`;
+            }
+
+            getFileUrl() {
+                if (!this.onlineEnabled) {
+                    return null;
+                }
+                return `https://github.com/${this.githubUsername}/${this.repoName}/blob/main/${this.filePath}`;
+            }
+
+            // ฟังก์ชันอื่นๆ เหมือนเดิม
             saveLastUpload(uniquePhones) {
                 this.lastUploadUniquePhones = uniquePhones;
                 try {
@@ -723,7 +1063,6 @@
                 this.lastUploadUniquePhones = [];
                 localStorage.removeItem(this.storageKey);
                 localStorage.removeItem(this.lastUploadKey);
-                // ไม่ล้างการตั้งค่าออนไลน์
             }
 
             async exportToArray() {
@@ -738,7 +1077,7 @@
         }
 
         // ระบบหลัก
-        const phoneDB = new SecurePhoneDatabase();
+        const phoneDB = new GitHubPhoneDatabase();
         let startTime = 0;
         let currentUniquePhones = [];
         let currentPasswordAction = null;
@@ -746,9 +1085,12 @@
         // อัพเดทสถานะออนไลน์
         function updateOnlineStatus(isActive) {
             const statusElement = document.getElementById('onlineStatus');
+            const repoInfoElement = document.getElementById('repoInfo');
+            
             if (isActive) {
                 statusElement.textContent = 'เปิดใช้งาน';
                 statusElement.className = 'online-status online-active';
+                repoInfoElement.textContent = `${phoneDB.githubUsername}/${phoneDB.repoName}`;
             } else {
                 statusElement.textContent = 'ปิดใช้งาน';
                 statusElement.className = 'online-status online-inactive';
@@ -857,23 +1199,35 @@
             currentPasswordAction = null;
         }
 
-        // ตรวจสอบไฟล์เมื่อผู้ใช้เลือก
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const estimatedPhones = estimatePhoneCount(file.size);
-                showFileInfo(file.name, file.size, estimatedPhones);
-                
-                if (estimatedPhones > MAX_PHONES_PER_FILE) {
-                    showStatus('uploadStatus', `⚠️ ไฟล์นี้มีขนาดใหญ่ อาจมีเบอร์โทรเกิน ${MAX_PHONES_PER_FILE.toLocaleString()} เบอร์ กรุณาตรวจสอบไฟล์`, true);
-                } else {
-                    showStatus('uploadStatus', '✅ ไฟล์พร้อมสำหรับการอัปโหลด');
-                }
-            } else {
-                hideFileInfo();
-                showStatus('uploadStatus', '📁 กรุณาเลือกไฟล์ Excel เพื่อเริ่มการตรวจสอบ');
-            }
-        });
+        // แสดง modal การตั้งค่า
+        function showSettingsModal() {
+            document.getElementById('settingsPasswordInput').value = '';
+            document.getElementById('settingsPasswordError').style.display = 'none';
+            document.getElementById('settingsModal').style.display = 'block';
+        }
+
+        // ซ่อน modal การตั้งค่า
+        function hideSettingsModal() {
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+
+        // แสดง modal เนื้อหาการตั้งค่า
+        function showSettingsContentModal() {
+            // โหลดค่าปัจจุบันลงในฟอร์ม
+            document.getElementById('settingsGithubUsername').value = phoneDB.githubUsername;
+            document.getElementById('settingsRepoName').value = phoneDB.repoName;
+            document.getElementById('settingsGithubToken').value = phoneDB.githubToken;
+            document.getElementById('settingsFilePath').value = phoneDB.filePath;
+            document.getElementById('settingsAdminPassword').value = ADMIN_PASSWORD;
+            document.getElementById('settingsMaxPhones').value = MAX_PHONES_PER_FILE;
+            
+            document.getElementById('settingsContentModal').style.display = 'block';
+        }
+
+        // ซ่อน modal เนื้อหาการตั้งค่า
+        function hideSettingsContentModal() {
+            document.getElementById('settingsContentModal').style.display = 'none';
+        }
 
         // ==================== ฟังก์ชันประมวลผลไฟล์ ====================
 
@@ -1005,11 +1359,11 @@
             // ซิงค์กับฐานข้อมูลออนไลน์อัตโนมัติ
             if (phoneDB.onlineEnabled) {
                 try {
-                    updateProgress(95, 'กำลังซิงค์กับฐานข้อมูลออนไลน์...');
+                    updateProgress(95, 'กำลังซิงค์กับ GitHub...');
                     await phoneDB.saveToOnline();
-                    console.log('ซิงค์กับออนไลน์สำเร็จ');
+                    console.log('ซิงค์กับ GitHub สำเร็จ');
                 } catch (error) {
-                    console.warn('ไม่สามารถซิงค์กับออนไลน์ได้:', error.message);
+                    console.warn('ไม่สามารถซิงค์กับ GitHub ได้:', error.message);
                     // ไม่ throw error เพื่อไม่ให้การประมวลผลไฟล์ล้มเหลว
                 }
             }
@@ -1044,7 +1398,7 @@
             
             let onlineStatus = '';
             if (phoneDB.onlineEnabled) {
-                onlineStatus = `<p>🌐 ข้อมูลถูกซิงค์กับฐานข้อมูลออนไลน์เรียบร้อย</p>`;
+                onlineStatus = `<p>🌐 ข้อมูลถูกซิงค์กับ GitHub เรียบร้อย</p>`;
             }
             
             summaryDiv.innerHTML = `
@@ -1066,244 +1420,466 @@
             showDownloadInfo(uniqueNumbers);
         }
 
-        // ==================== Event Listeners ====================
+        // ==================== INITIALIZE EVENT LISTENERS ====================
 
-        // บันทึกการตั้งค่า
-        document.getElementById('saveConfigBtn').addEventListener('click', function() {
-            const sheetsUrl = document.getElementById('sheetsUrl').value.trim();
-            
-            if (!sheetsUrl) {
-                showStatus('configStatus', '❌ กรุณากรอก Google Sheets URL', true);
-                return;
-            }
+        // ฟังก์ชันเริ่มต้นทั้งหมด
+        function initializeApp() {
+            console.log('กำลังเริ่มต้นโปรแกรม...');
 
-            if (!sheetsUrl.includes('docs.google.com/spreadsheets')) {
-                showStatus('configStatus', '❌ URL ไม่ถูกต้อง ต้องเป็น Google Sheets URL', true);
-                return;
-            }
+            // 1. ปุ่มการตั้งค่า
+            document.getElementById('settingsBtn').addEventListener('click', function() {
+                console.log('คลิกปุ่มตั้งค่า');
+                showSettingsModal();
+            });
 
-            phoneDB.saveConfig(sheetsUrl);
-            showStatus('configStatus', '✅ บันทึกการตั้งค่าสำเร็จ! ตอนนี้ใช้ฐานข้อมูลออนไลน์แล้ว<br>สามารถแจกลิงก์นี้ให้ทีมงานได้เลย');
-        });
+            // 2. ยืนยันรหัสผ่านการตั้งค่า
+            document.getElementById('confirmSettingsPasswordBtn').addEventListener('click', function() {
+                const passwordInput = document.getElementById('settingsPasswordInput').value;
+                
+                if (passwordInput === ADMIN_PASSWORD) {
+                    document.getElementById('settingsPasswordError').style.display = 'none';
+                    hideSettingsModal();
+                    showSettingsContentModal();
+                } else {
+                    document.getElementById('settingsPasswordError').style.display = 'block';
+                }
+            });
 
-        // บันทึกข้อมูลไปยังออนไลน์
-        document.getElementById('saveToOnlineBtn').addEventListener('click', function() {
-            if (!phoneDB.onlineEnabled) {
-                showStatus('configStatus', '❌ ยังไม่ได้ตั้งค่าฐานข้อมูลออนไลน์', true);
-                return;
-            }
-            showPasswordModal('saveToOnline');
-        });
+            // 3. ยกเลิกการตั้งค่า
+            document.getElementById('cancelSettingsPasswordBtn').addEventListener('click', function() {
+                hideSettingsModal();
+            });
 
-        // โหลดข้อมูลจากออนไลน์
-        document.getElementById('loadFromOnlineBtn').addEventListener('click', function() {
-            if (!phoneDB.onlineEnabled) {
-                showStatus('uploadStatus', '❌ ยังไม่ได้ตั้งค่าฐานข้อมูลออนไลน์', true);
-                return;
-            }
+            // 4. ปิดการตั้งค่า
+            document.getElementById('closeSettingsBtn').addEventListener('click', function() {
+                hideSettingsContentModal();
+            });
 
-            showLoading('กำลังโหลดข้อมูลจากออนไลน์...');
-            
-            phoneDB.loadFromOnline()
-                .then(result => {
-                    showStatus('uploadStatus', 
-                        `✅ โหลดข้อมูลจากออนไลน์สำเร็จ!<br>
-                         พบ ${result.onlineCount.toLocaleString()} เบอร์<br>
-                         เพิ่มใหม่ ${result.newCount.toLocaleString()} เบอร์<br>
-                         รวมทั้งหมด: ${result.totalCount.toLocaleString()} เบอร์`);
-                })
-                .catch(error => {
-                    showStatus('uploadStatus', `❌ โหลดข้อมูลล้มเหลว: ${error.message}`, true);
-                })
-                .finally(() => {
+            // 5. บันทึกการตั้งค่า GitHub
+            document.getElementById('saveSettingsBtn').addEventListener('click', function() {
+                const username = document.getElementById('settingsGithubUsername').value.trim();
+                const repoName = document.getElementById('settingsRepoName').value.trim();
+                const token = document.getElementById('settingsGithubToken').value.trim();
+                const filePath = document.getElementById('settingsFilePath').value.trim();
+                
+                if (!username || !repoName || !token) {
+                    showStatus('settingsStatus', '❌ กรุณากรอกข้อมูลให้ครบทุกช่อง', true);
+                    return;
+                }
+
+                const newConfig = {
+                    username: username,
+                    repoName: repoName,
+                    token: token,
+                    filePath: filePath
+                };
+                
+                phoneDB.updateConfig(newConfig);
+                showStatus('settingsStatus', '✅ บันทึกการตั้งค่า GitHub สำเร็จ!');
+                updateOnlineStatus(true);
+            });
+
+            // 6. ทดสอบการตั้งค่า
+            document.getElementById('testSettingsBtn').addEventListener('click', async function() {
+                showLoading('กำลังทดสอบการเชื่อมต่อ...');
+                
+                try {
+                    const result = await phoneDB.testConnection();
                     hideLoading();
-                });
-        });
+                    showStatus('settingsStatus', result.message);
+                } catch (error) {
+                    hideLoading();
+                    showStatus('settingsStatus', `❌ การเชื่อมต่อล้มเหลว: ${error.message}`, true);
+                }
+            });
 
-        // อัปโหลดไฟล์
-        document.getElementById('uploadBtn').addEventListener('click', async function() {
-            const fileInput = document.getElementById('fileInput');
-            const file = fileInput.files[0];
-            const uploadBtn = document.getElementById('uploadBtn');
-            
-            if (!file) {
-                showStatus('uploadStatus', '❌ กรุณาเลือกไฟล์ Excel ก่อน', true);
-                return;
-            }
+            // 7. บันทึกการตั้งค่าระบบ
+            document.getElementById('saveSystemSettingsBtn').addEventListener('click', function() {
+                const maxPhones = parseInt(document.getElementById('settingsMaxPhones').value);
+                
+                if (maxPhones && maxPhones > 0) {
+                    MAX_PHONES_PER_FILE = maxPhones;
+                    showStatus('settingsStatus', `✅ บันทึกการตั้งค่าระบบสำเร็จ! จำนวนเบอร์สูงสุด: ${maxPhones.toLocaleString()}`);
+                } else {
+                    showStatus('settingsStatus', '❌ กรุณากรอกจำนวนเบอร์สูงสุดที่ถูกต้อง', true);
+                }
+            });
 
-            if (!file.name.match(/\.(xlsx|xls)$/)) {
-                showStatus('uploadStatus', '❌ กรุณาเลือกไฟล์ Excel (.xlsx หรือ .xls) เท่านั้น', true);
-                return;
-            }
+            // 8. รีเซ็ตการตั้งค่า
+            document.getElementById('resetSettingsBtn').addEventListener('click', function() {
+                if (confirm('⚠️ ต้องการรีเซ็ตการตั้งค่าทั้งหมดเป็นค่าเริ่มต้นใช่หรือไม่?')) {
+                    document.getElementById('settingsGithubUsername').value = "apn8881";
+                    document.getElementById('settingsRepoName').value = "datacfe";
+                    document.getElementById('settingsGithubToken').value = "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";
+                    document.getElementById('settingsFilePath').value = "data/phones.json";
+                    document.getElementById('settingsAdminPassword').value = "23669";
+                    document.getElementById('settingsMaxPhones').value = "300000";
+                    
+                    showStatus('settingsStatus', '✅ รีเซ็ตการตั้งค่าเป็นค่าเริ่มต้นเรียบร้อย');
+                }
+            });
 
-            if (file.size > 50 * 1024 * 1024) {
-                showStatus('uploadStatus', '❌ ไฟล์มีขนาดใหญ่เกินไป (สูงสุด 50MB)', true);
-                return;
-            }
+            // 9. สร้างไฟล์ฐานข้อมูลใหม่
+            document.getElementById('initDatabaseBtn').addEventListener('click', async function() {
+                showLoading('กำลังสร้างไฟล์ฐานข้อมูลใหม่ใน GitHub...');
+                
+                try {
+                    const result = await phoneDB.initializeDatabase();
+                    hideLoading();
+                    showStatus('fixStatus', 
+                        '✅ สร้างไฟล์ฐานข้อมูลใหม่สำเร็จ!<br>' +
+                        'ตอนนี้สามารถใช้งานฐานข้อมูล GitHub ได้แล้ว<br>' +
+                        '<a href="' + result.commitUrl + '" target="_blank">ดู Commit บน GitHub</a>');
+                } catch (error) {
+                    hideLoading();
+                    let errorMessage = `❌ ไม่สามารถสร้างไฟล์ฐานข้อมูลได้: ${error.message}`;
+                    
+                    if (error.message.includes('สิทธิ์')) {
+                        errorMessage += '<br><br>💡 <strong>คำแนะนำ:</strong> กรุณาตรวจสอบว่า Token มีสิทธิ์เขียน repository นี้ หรือลองสร้างไฟล์ด้วยมือตามขั้นตอนด้านล่าง';
+                    }
+                    
+                    showStatus('fixStatus', errorMessage, true);
+                }
+            });
 
-            startTime = Date.now();
-            uploadBtn.disabled = true;
-            uploadBtn.textContent = 'กำลังประมวลผล...';
-            showStatus('uploadStatus', '⏳ กำลังเริ่มประมวลผลไฟล์...');
+            // 10. ทดสอบการเชื่อมต่อ
+            document.getElementById('testConnectionBtn').addEventListener('click', async function() {
+                showLoading('กำลังทดสอบการเชื่อมต่อ GitHub...');
+                
+                try {
+                    const result = await phoneDB.testConnection();
+                    hideLoading();
+                    let message = `${result.message}<br>`;
+                    
+                    if (result.count === 0) {
+                        message += '📝 <strong>หมายเหตุ:</strong> ไฟล์มีอยู่แต่ยังไม่มีข้อมูล<br>';
+                        message += 'คุณสามารถอัปโหลดไฟล์ Excel เพื่อเพิ่มข้อมูลได้';
+                    }
+                    
+                    message += `<a href="${phoneDB.getFileUrl()}" target="_blank">ดูไฟล์ใน GitHub</a>`;
+                    
+                    showStatus('fixStatus', message);
+                } catch (error) {
+                    hideLoading();
+                    let errorMessage = `❌ การเชื่อมต่อล้มเหลว: ${error.message}`;
+                    
+                    if (error.message.includes('404')) {
+                        errorMessage += '<br><br>📝 <strong>ไฟล์ยังไม่มี:</strong> กรุณาสร้างไฟล์ data/phones.json ก่อน';
+                    }
+                    
+                    showStatus('fixStatus', errorMessage, true);
+                }
+            });
 
-            try {
-                showLoading('กำลังอ่านไฟล์ Excel...');
+            // 11. ตรวจสอบการตั้งค่าด้วยมือ
+            document.getElementById('checkManualSetupBtn').addEventListener('click', async function() {
+                showLoading('กำลังตรวจสอบการตั้งค่า...');
+                
+                try {
+                    const result = await phoneDB.testConnection();
+                    hideLoading();
+                    
+                    if (result.success) {
+                        showStatus('fixStatus', 
+                            '✅ การตั้งค่าสำเร็จ!<br>' +
+                            'ไฟล์ data/phones.json พร้อมใช้งานแล้ว<br>' +
+                            `<a href="${phoneDB.getFileUrl()}" target="_blank">ดูไฟล์ใน GitHub</a>`);
+                    }
+                } catch (error) {
+                    hideLoading();
+                    showStatus('fixStatus', 
+                        '❌ ยังไม่พบไฟล์ data/phones.json<br>' +
+                        'กรุณาทำตามขั้นตอนการสร้างไฟล์ด้วยมือให้ครบถ้วน', true);
+                }
+            });
+
+            // 12. ดูข้อมูลใน GitHub
+            document.getElementById('viewOnlineBtn').addEventListener('click', function() {
+                const url = phoneDB.getOnlineUrl();
+                if (url) {
+                    window.open(url, '_blank');
+                } else {
+                    showStatus('fixStatus', '❌ ไม่พบ URL ของ repository', true);
+                }
+            });
+
+            // 13. อัปโหลดไฟล์
+            document.getElementById('uploadBtn').addEventListener('click', async function() {
+                const fileInput = document.getElementById('fileInput');
+                const file = fileInput.files[0];
+                const uploadBtn = document.getElementById('uploadBtn');
+                
+                if (!file) {
+                    showStatus('uploadStatus', '❌ กรุณาเลือกไฟล์ Excel ก่อน', true);
+                    return;
+                }
+
+                if (!file.name.match(/\.(xlsx|xls)$/)) {
+                    showStatus('uploadStatus', '❌ กรุณาเลือกไฟล์ Excel (.xlsx หรือ .xls) เท่านั้น', true);
+                    return;
+                }
+
+                if (file.size > 50 * 1024 * 1024) {
+                    showStatus('uploadStatus', '❌ ไฟล์มีขนาดใหญ่เกินไป (สูงสุด 50MB)', true);
+                    return;
+                }
+
+                startTime = Date.now();
+                uploadBtn.disabled = true;
+                uploadBtn.textContent = 'กำลังประมวลผล...';
+                showStatus('uploadStatus', '⏳ กำลังเริ่มประมวลผลไฟล์...');
+
+                try {
+                    showLoading('กำลังอ่านไฟล์ Excel...');
+                    
+                    setTimeout(async () => {
+                        try {
+                            await processExcelFile(file);
+                            let successMessage = '✅ ประมวลผลไฟล์เสร็จสิ้น! ดูผลลัพธ์ได้ที่ส่วน "ผลการตรวจสอบ"';
+                            if (phoneDB.onlineEnabled) {
+                                successMessage += '<br>🌐 ข้อมูลถูกซิงค์กับ GitHub เรียบร้อย';
+                            }
+                            showStatus('uploadStatus', successMessage);
+                        } catch (error) {
+                            console.error('เกิดข้อผิดพลาด:', error);
+                            showStatus('uploadStatus', `❌ เกิดข้อผิดพลาด: ${error.message}`, true);
+                        } finally {
+                            hideLoading();
+                            uploadBtn.disabled = false;
+                            uploadBtn.textContent = 'อัปโหลดและตรวจสอบ';
+                        }
+                    }, 100);
+                    
+                } catch (error) {
+                    console.error('เกิดข้อผิดพลาด:', error);
+                    showStatus('uploadStatus', `❌ เกิดข้อผิดพลาด: ${error.message}`, true);
+                    hideLoading();
+                    uploadBtn.disabled = false;
+                    uploadBtn.textContent = 'อัปโหลดและตรวจสอบ';
+                }
+            });
+
+            // 14. ดูฐานข้อมูล
+            document.getElementById('viewDbBtn').addEventListener('click', async function() {
+                const dbInfo = document.getElementById('dbInfo');
+                const dbCount = document.getElementById('dbCount');
+                
+                dbInfo.classList.remove('hidden');
+                const count = await phoneDB.getCount();
+                const lastUpload = phoneDB.getLastUploadData();
+                const onlineStatus = phoneDB.onlineEnabled ? '✅ เปิดใช้งาน' : '❌ ปิดใช้งาน';
+                
+                let onlineInfo = '';
+                if (phoneDB.onlineEnabled) {
+                    onlineInfo = `<p>📁 Repository: <a href="https://github.com/${phoneDB.githubUsername}/${phoneDB.repoName}" target="_blank">${phoneDB.githubUsername}/${phoneDB.repoName}</a></p>`;
+                }
+                
+                dbCount.innerHTML = `
+                    <div class="info-box">
+                        <p><strong>ข้อมูลในฐานข้อมูล:</strong></p>
+                        <p>จำนวนเบอร์โทรในฐานข้อมูล: <span class="stat-number">${count.toLocaleString()}</span> เบอร์</p>
+                        <p>เบอร์ที่ไม่ซ้ำจากไฟล์ล่าสุด: <span class="stat-number">${lastUpload.length.toLocaleString()}</span> เบอร์</p>
+                        <p>สถานะฐานข้อมูล GitHub: ${onlineStatus}</p>
+                        ${onlineInfo}
+                        <p>ระบบรองรับฐานข้อมูลไม่จำกัดขนาด</p>
+                    </div>
+                `;
+            });
+
+            // 15. ส่งออกฐานข้อมูล
+            document.getElementById('exportDbBtn').addEventListener('click', async function() {
+                showLoading('กำลังส่งออกฐานข้อมูล...');
                 
                 setTimeout(async () => {
                     try {
-                        await processExcelFile(file);
-                        let successMessage = '✅ ประมวลผลไฟล์เสร็จสิ้น! ดูผลลัพธ์ได้ที่ส่วน "ผลการตรวจสอบ"';
-                        if (phoneDB.onlineEnabled) {
-                            successMessage += '<br>🌐 ข้อมูลถูกซิงค์กับฐานข้อมูลออนไลน์เรียบร้อย';
+                        const allPhones = await phoneDB.exportToArray();
+                        
+                        if (allPhones.length === 0) {
+                            alert('ไม่พบข้อมูลในฐานข้อมูล');
+                            hideLoading();
+                            return;
                         }
-                        showStatus('uploadStatus', successMessage);
-                    } catch (error) {
-                        console.error('เกิดข้อผิดพลาด:', error);
-                        showStatus('uploadStatus', `❌ เกิดข้อผิดพลาด: ${error.message}`, true);
-                    } finally {
+                        
+                        const wb = XLSX.utils.book_new();
+                        const phoneData = allPhones.map(phone => [phone]);
+                        phoneData.unshift(['เบอร์โทรศัพท์']);
+                        
+                        const ws = XLSX.utils.aoa_to_sheet(phoneData);
+                        XLSX.utils.book_append_sheet(wb, ws, 'ฐานข้อมูลเบอร์โทร');
+                        
+                        const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+                        const filename = `ฐานข้อมูลเบอร์โทร_${timestamp}.xlsx`;
+                        
+                        XLSX.writeFile(wb, filename);
+                        
                         hideLoading();
-                        uploadBtn.disabled = false;
-                        uploadBtn.textContent = 'อัปโหลดและตรวจสอบ';
+                        alert(`ส่งออกฐานข้อมูลสำเร็จ! มีทั้งหมด ${allPhones.length.toLocaleString()} เบอร์`);
+                    } catch (error) {
+                        console.error('เกิดข้อผิดพลาดในการส่งออก:', error);
+                        alert('เกิดข้อผิดพลาดในการส่งออก');
+                        hideLoading();
                     }
                 }, 100);
+            });
+
+            // 16. ดาวน์โหลดไฟล์
+            document.getElementById('downloadBtn').addEventListener('click', async function() {
+                showLoading('กำลังสร้างไฟล์ Excel...');
                 
-            } catch (error) {
-                console.error('เกิดข้อผิดพลาด:', error);
-                showStatus('uploadStatus', `❌ เกิดข้อผิดพลาด: ${error.message}`, true);
-                hideLoading();
-                uploadBtn.disabled = false;
-                uploadBtn.textContent = 'อัปโหลดและตรวจสอบ';
-            }
-        });
-
-        // ดูฐานข้อมูล
-        document.getElementById('viewDbBtn').addEventListener('click', async function() {
-            const dbInfo = document.getElementById('dbInfo');
-            const dbCount = document.getElementById('dbCount');
-            
-            dbInfo.classList.remove('hidden');
-            const count = await phoneDB.getCount();
-            const lastUpload = phoneDB.getLastUploadData();
-            const onlineStatus = phoneDB.onlineEnabled ? '✅ เปิดใช้งาน' : '❌ ปิดใช้งาน';
-            
-            dbCount.innerHTML = `
-                <div class="info-box">
-                    <p><strong>ข้อมูลในฐานข้อมูล:</strong></p>
-                    <p>จำนวนเบอร์โทรในฐานข้อมูล: <span class="stat-number">${count.toLocaleString()}</span> เบอร์</p>
-                    <p>เบอร์ที่ไม่ซ้ำจากไฟล์ล่าสุด: <span class="stat-number">${lastUpload.length.toLocaleString()}</span> เบอร์</p>
-                    <p>สถานะฐานข้อมูลออนไลน์: ${onlineStatus}</p>
-                    <p>ระบบรองรับฐานข้อมูลไม่จำกัดขนาด</p>
-                </div>
-            `;
-        });
-
-        // ดาวน์โหลดไฟล์
-        document.getElementById('downloadBtn').addEventListener('click', async function() {
-            showLoading('กำลังสร้างไฟล์ Excel...');
-            
-            setTimeout(async () => {
-                try {
-                    const phonesToDownload = phoneDB.getLastUploadData();
-                    
-                    if (phonesToDownload.length === 0) {
-                        alert('ไม่พบข้อมูลจากไฟล์ล่าสุด กรุณาอัปโหลดไฟล์ก่อน');
-                        hideLoading();
-                        return;
-                    }
-                    
-                    const wb = XLSX.utils.book_new();
-                    const phoneData = phonesToDownload.map(phone => [phone]);
-                    phoneData.unshift(['เบอร์โทรศัพท์']);
-                    
-                    const ws = XLSX.utils.aoa_to_sheet(phoneData);
-                    XLSX.utils.book_append_sheet(wb, ws, 'เบอร์โทร');
-                    
-                    const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
-                    const filename = `เบอร์โทรที่ไม่ซ้ำ_${timestamp}.xlsx`;
-                    
-                    XLSX.writeFile(wb, filename);
-                    
-                    hideLoading();
-                    alert(`ดาวน์โหลดไฟล์สำเร็จ! มีทั้งหมด ${phonesToDownload.length.toLocaleString()} เบอร์ที่ไม่ซ้ำจากไฟล์ล่าสุด`);
-                } catch (error) {
-                    console.error('เกิดข้อผิดพลาดในการสร้างไฟล์:', error);
-                    alert('เกิดข้อผิดพลาดในการสร้างไฟล์');
-                    hideLoading();
-                }
-            }, 100);
-        });
-
-        // ล้างฐานข้อมูล
-        document.getElementById('clearDbBtn').addEventListener('click', function() {
-            showPasswordModal('clearDatabase');
-        });
-
-        // ยืนยันรหัสผ่าน
-        document.getElementById('confirmPasswordBtn').addEventListener('click', async function() {
-            const passwordInput = document.getElementById('passwordInput').value;
-            
-            if (passwordInput === ADMIN_PASSWORD) {
-                document.getElementById('passwordError').style.display = 'none';
-                
-                if (currentPasswordAction === 'saveToOnline') {
-                    hidePasswordModal();
-                    showLoading('กำลังบันทึกข้อมูลไปยังออนไลน์...');
-                    
+                setTimeout(async () => {
                     try {
-                        const result = await phoneDB.saveToOnline();
-                        showStatus('configStatus', 
-                            `✅ บันทึกข้อมูลไปยังออนไลน์สำเร็จ!<br>
-                             บันทึก ${result.savedCount.toLocaleString()} เบอร์<br>
-                             ทีมงานทุกคนจะเห็นข้อมูลล่าสุด`);
+                        const phonesToDownload = phoneDB.getLastUploadData();
+                        
+                        if (phonesToDownload.length === 0) {
+                            alert('ไม่พบข้อมูลจากไฟล์ล่าสุด กรุณาอัปโหลดไฟล์ก่อน');
+                            hideLoading();
+                            return;
+                        }
+                        
+                        const wb = XLSX.utils.book_new();
+                        const phoneData = phonesToDownload.map(phone => [phone]);
+                        phoneData.unshift(['เบอร์โทรศัพท์']);
+                        
+                        const ws = XLSX.utils.aoa_to_sheet(phoneData);
+                        XLSX.utils.book_append_sheet(wb, ws, 'เบอร์โทร');
+                        
+                        const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+                        const filename = `เบอร์โทรที่ไม่ซ้ำ_${timestamp}.xlsx`;
+                        
+                        XLSX.writeFile(wb, filename);
+                        
+                        hideLoading();
+                        alert(`ดาวน์โหลดไฟล์สำเร็จ! มีทั้งหมด ${phonesToDownload.length.toLocaleString()} เบอร์ที่ไม่ซ้ำจากไฟล์ล่าสุด`);
                     } catch (error) {
-                        showStatus('configStatus', `❌ บันทึกข้อมูลล้มเหลว: ${error.message}`, true);
-                    } finally {
+                        console.error('เกิดข้อผิดพลาดในการสร้างไฟล์:', error);
+                        alert('เกิดข้อผิดพลาดในการสร้างไฟล์');
                         hideLoading();
                     }
-                    
-                } else if (currentPasswordAction === 'clearDatabase') {
-                    hidePasswordModal();
-                    showLoading('กำลังล้างฐานข้อมูล...');
-                    
-                    try {
-                        await phoneDB.clear();
-                        document.getElementById('dbInfo').classList.add('hidden');
-                        document.getElementById('result').classList.add('hidden');
-                        document.getElementById('downloadInfo').classList.add('hidden');
-                        hideLoading();
-                        showStatus('uploadStatus', '✅ ล้างฐานข้อมูลเรียบร้อยแล้ว');
-                    } catch (error) {
-                        hideLoading();
-                        showStatus('uploadStatus', '❌ เกิดข้อผิดพลาดในการล้างฐานข้อมูล', true);
-                    }
-                }
+                }, 100);
+            });
+
+            // 17. ล้างฐานข้อมูล
+            document.getElementById('clearDbBtn').addEventListener('click', function() {
+                showPasswordModal('clearDatabase');
+            });
+
+            // 18. บันทึกข้อมูลไปยังออนไลน์
+            document.getElementById('saveToOnlineBtn').addEventListener('click', function() {
+                showPasswordModal('saveToOnline');
+            });
+
+            // 19. โหลดข้อมูลจากออนไลน์
+            document.getElementById('loadFromOnlineBtn').addEventListener('click', function() {
+                showLoading('กำลังโหลดข้อมูลจาก GitHub...');
                 
-            } else {
-                document.getElementById('passwordError').style.display = 'block';
-            }
-        });
+                phoneDB.loadFromOnline()
+                    .then(result => {
+                        let message = `✅ โหลดข้อมูลจาก GitHub สำเร็จ!<br>`;
+                        if (result.onlineCount === 0) {
+                            message += `⚠️ ไม่พบข้อมูลใน GitHub (ไฟล์ว่าง)<br>`;
+                        } else {
+                            message += `พบ ${result.onlineCount.toLocaleString()} เบอร์<br>`;
+                        }
+                        message += `เพิ่มใหม่ ${result.newCount.toLocaleString()} เบอร์<br>`;
+                        message += `รวมทั้งหมด: ${result.totalCount.toLocaleString()} เบอร์`;
+                        
+                        showStatus('configStatus', message);
+                    })
+                    .catch(error => {
+                        let errorMessage = `❌ โหลดข้อมูลล้มเหลว: ${error.message}`;
+                        if (error.message.includes('รูปแบบข้อมูล')) {
+                            errorMessage += '<br>กรุณากด "สร้างไฟล์ฐานข้อมูลใหม่" เพื่อแก้ไข';
+                        }
+                        showStatus('configStatus', errorMessage, true);
+                    })
+                    .finally(() => {
+                        hideLoading();
+                    });
+            });
 
-        // ยกเลิกรหัสผ่าน
-        document.getElementById('cancelPasswordBtn').addEventListener('click', function() {
-            hidePasswordModal();
-        });
+            // 20. ยืนยันรหัสผ่าน
+            document.getElementById('confirmPasswordBtn').addEventListener('click', async function() {
+                const passwordInput = document.getElementById('passwordInput').value;
+                
+                if (passwordInput === ADMIN_PASSWORD) {
+                    document.getElementById('passwordError').style.display = 'none';
+                    
+                    if (currentPasswordAction === 'saveToOnline') {
+                        hidePasswordModal();
+                        showLoading('กำลังบันทึกข้อมูลไปยัง GitHub...');
+                        
+                        try {
+                            const result = await phoneDB.saveToOnline();
+                            showStatus('configStatus', 
+                                `✅ บันทึกข้อมูลไปยัง GitHub สำเร็จ!<br>
+                                 บันทึก ${result.savedCount.toLocaleString()} เบอร์<br>
+                                 <a href="${result.commitUrl}" target="_blank">ดู Commit บน GitHub</a><br>
+                                 ทีมงานทุกคนจะเห็นข้อมูลล่าสุด`);
+                        } catch (error) {
+                            showStatus('configStatus', `❌ บันทึกข้อมูลล้มเหลว: ${error.message}`, true);
+                        } finally {
+                            hideLoading();
+                        }
+                        
+                    } else if (currentPasswordAction === 'clearDatabase') {
+                        hidePasswordModal();
+                        showLoading('กำลังล้างฐานข้อมูล...');
+                        
+                        try {
+                            await phoneDB.clear();
+                            document.getElementById('dbInfo').classList.add('hidden');
+                            document.getElementById('result').classList.add('hidden');
+                            document.getElementById('downloadInfo').classList.add('hidden');
+                            hideLoading();
+                            showStatus('uploadStatus', '✅ ล้างฐานข้อมูลเรียบร้อยแล้ว');
+                        } catch (error) {
+                            hideLoading();
+                            showStatus('uploadStatus', '❌ เกิดข้อผิดพลาดในการล้างฐานข้อมูล', true);
+                        }
+                    }
+                    
+                } else {
+                    document.getElementById('passwordError').style.display = 'block';
+                }
+            });
 
-        // Initialize
+            // 21. ยกเลิกรหัสผ่าน
+            document.getElementById('cancelPasswordBtn').addEventListener('click', function() {
+                hidePasswordModal();
+            });
+
+            // 22. ตรวจสอบไฟล์เมื่อเลือก
+            document.getElementById('fileInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const estimatedPhones = estimatePhoneCount(file.size);
+                    showFileInfo(file.name, file.size, estimatedPhones);
+                    
+                    if (estimatedPhones > MAX_PHONES_PER_FILE) {
+                        showStatus('uploadStatus', `⚠️ ไฟล์นี้มีขนาดใหญ่ อาจมีเบอร์โทรเกิน ${MAX_PHONES_PER_FILE.toLocaleString()} เบอร์ กรุณาตรวจสอบไฟล์`, true);
+                    } else {
+                        showStatus('uploadStatus', '✅ ไฟล์พร้อมสำหรับการอัปโหลด');
+                    }
+                } else {
+                    hideFileInfo();
+                    showStatus('uploadStatus', '📁 กรุณาเลือกไฟล์ Excel เพื่อเริ่มการตรวจสอบ');
+                }
+            });
+
+            console.log('✅ โปรแกรมเริ่มต้นสำเร็จ! พร้อมใช้งาน');
+        }
+
+        // เริ่มต้นโปรแกรมเมื่อโหลดหน้าเว็บเสร็จ
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded - กำลังเริ่มต้นโปรแกรม...');
+            initializeApp();
             showStatus('uploadStatus', '📁 กรุณาเลือกไฟล์ Excel เพื่อเริ่มการตรวจสอบ');
-            
-            // โหลดการตั้งค่าที่บันทึกไว้
-            if (phoneDB.sheetsUrl) {
-                document.getElementById('sheetsUrl').value = phoneDB.sheetsUrl;
-            }
             
             // แสดงข้อมูลดาวน์โหลดถ้ามีไฟล์ล่าสุด
             const lastUpload = phoneDB.getLastUploadData();
             if (lastUpload.length > 0) {
                 showDownloadInfo(lastUpload.length);
             }
-            
-            console.log('ระบบพร้อมใช้งาน');
         });
 
     </script>
