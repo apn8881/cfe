@@ -270,6 +270,14 @@
             margin: 10px 0;
             font-size: 0.9em;
         }
+        .download-info {
+            background-color: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
@@ -327,6 +335,10 @@
             <div id="result" class="result hidden">
                 <h3>สรุปผลการตรวจสอบ</h3>
                 <div id="summary"></div>
+                <div id="downloadInfo" class="download-info hidden">
+                    <strong>📥 พร้อมดาวน์โหลด:</strong> 
+                    <span id="uniqueCount">0</span> เบอร์ที่ไม่ซ้ำจากไฟล์ล่าสุด
+                </div>
                 <div class="button-container">
                     <button class="btn btn-success" id="downloadBtn">ดาวน์โหลดไฟล์ที่ตัดเบอร์ซ้ำออกแล้ว</button>
                 </div>
@@ -367,15 +379,17 @@
         // ค่าคงที่
         const MAX_PHONES_PER_FILE = 300000;
         const PASSWORD = "23669";
-        const CHUNK_SIZE = 50000; // เพิ่ม chunk size เป็น 50,000
-        const BATCH_SIZE = 1000; // ขนาด batch สำหรับการบันทึก
+        const CHUNK_SIZE = 50000;
+        const BATCH_SIZE = 1000;
 
         // ระบบจัดการฐานข้อมูลแบบเร็ว
         class FastPhoneDatabase {
             constructor() {
                 this.storageKey = 'phoneDatabase';
+                this.lastUploadKey = 'lastUploadData';
                 this.phoneSet = new Set();
-                this.pendingAdds = new Set(); // รอการบันทึก
+                this.pendingAdds = new Set();
+                this.lastUploadUniquePhones = []; // เบอร์ที่ไม่ซ้ำจากไฟล์ล่าสุด
                 this.isSaving = false;
                 this.load();
             }
@@ -388,13 +402,36 @@
                         this.phoneSet = new Set(phoneArray);
                         console.log('โหลดฐานข้อมูลสำเร็จ:', this.phoneSet.size, 'เบอร์');
                     }
+
+                    // โหลดข้อมูลไฟล์ล่าสุด
+                    const lastUpload = localStorage.getItem(this.lastUploadKey);
+                    if (lastUpload) {
+                        this.lastUploadUniquePhones = JSON.parse(lastUpload);
+                        console.log('โหลดข้อมูลไฟล์ล่าสุด:', this.lastUploadUniquePhones.length, 'เบอร์');
+                    }
                 } catch (error) {
                     console.error('เกิดข้อผิดพลาดในการโหลดฐานข้อมูล:', error);
                     this.phoneSet = new Set();
+                    this.lastUploadUniquePhones = [];
                 }
             }
 
-            // บันทึกแบบ asynchronous ไม่บล็อก UI
+            // บันทึกข้อมูลไฟล์ล่าสุด
+            saveLastUpload(uniquePhones) {
+                this.lastUploadUniquePhones = uniquePhones;
+                try {
+                    localStorage.setItem(this.lastUploadKey, JSON.stringify(uniquePhones));
+                } catch (error) {
+                    console.error('เกิดข้อผิดพลาดในการบันทึกข้อมูลไฟล์ล่าสุด:', error);
+                }
+            }
+
+            // ดึงข้อมูลไฟล์ล่าสุด
+            getLastUploadData() {
+                return this.lastUploadUniquePhones;
+            }
+
+            // บันทึกแบบ asynchronous
             async save() {
                 if (this.isSaving) return;
                 
@@ -414,7 +451,6 @@
                 }
             }
 
-            // บันทึกแบบ batch
             async saveBatch() {
                 return new Promise(resolve => {
                     setTimeout(() => {
@@ -429,7 +465,7 @@
                 this.phoneSet = new Set(phoneArray.slice(-halfSize));
             }
 
-            // ตรวจสอบหลายเบอร์พร้อมกัน (เร็วกว่ามาก)
+            // ตรวจสอบหลายเบอร์พร้อมกัน
             checkMultiplePhones(phones) {
                 const results = [];
                 for (const phone of phones) {
@@ -455,12 +491,15 @@
                     }
                 }
 
-                // บันทึกเมื่อมีข้อมูลใหม่จำนวนมาก
                 if (this.pendingAdds.size >= BATCH_SIZE) {
                     await this.saveBatch();
                 }
 
-                return { newCount, duplicateCount: phoneResults.length - newCount };
+                return { 
+                    newCount, 
+                    duplicateCount: phoneResults.length - newCount,
+                    newPhones 
+                };
             }
 
             async getCount() {
@@ -470,7 +509,9 @@
             async clear() {
                 this.phoneSet.clear();
                 this.pendingAdds.clear();
+                this.lastUploadUniquePhones = [];
                 localStorage.removeItem(this.storageKey);
+                localStorage.removeItem(this.lastUploadKey);
             }
 
             async exportToArray() {
@@ -488,6 +529,7 @@
         // ระบบหลัก
         const phoneDB = new FastPhoneDatabase();
         let startTime = 0;
+        let currentUniquePhones = []; // เก็บเบอร์ที่ไม่ซ้ำจากไฟล์ปัจจุบัน
 
         // แสดง loading modal
         function showLoading(message = "กรุณารอสักครู่") {
@@ -554,6 +596,15 @@
             `;
             
             fileInfoDiv.classList.remove('hidden');
+        }
+
+        // แสดงข้อมูลดาวน์โหลด
+        function showDownloadInfo(uniqueCount) {
+            const downloadInfoDiv = document.getElementById('downloadInfo');
+            const uniqueCountSpan = document.getElementById('uniqueCount');
+            
+            uniqueCountSpan.textContent = uniqueCount.toLocaleString();
+            downloadInfoDiv.classList.remove('hidden');
         }
 
         // ซ่อนข้อมูลไฟล์
@@ -666,7 +717,6 @@
                             throw new Error('ไม่พบข้อมูลในชีทแรกของไฟล์ Excel');
                         }
                         
-                        // อ่านข้อมูลทั้งหมดในครั้งเดียว (เร็วกว่า)
                         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
                         
                         if (jsonData.length === 0) {
@@ -702,7 +752,7 @@
             
             updateProgress(60, 'กำลังรวบรวมเบอร์โทรศัพท์...');
             
-            // รวบรวมเบอร์โทรทั้งหมดในครั้งเดียว (เร็วกว่า)
+            // รวบรวมเบอร์โทรทั้งหมดในครั้งเดียว
             for (let i = 0; i < data.length; i++) {
                 const row = data[i];
                 
@@ -731,7 +781,8 @@
 
             updateProgress(80, 'กำลังตรวจสอบเบอร์ซ้ำ...');
 
-            // ตรวจสอบแบบแบ่ง chunk ใหญ่
+            // รีเซ็ตข้อมูลไฟล์ปัจจุบัน
+            currentUniquePhones = [];
             let totalDuplicates = 0;
             let totalUnique = 0;
 
@@ -742,10 +793,13 @@
                 const checkResults = phoneDB.checkMultiplePhones(chunk);
                 
                 // เพิ่มเบอร์ใหม่หลายเบอร์พร้อมกัน
-                const { newCount, duplicateCount } = await phoneDB.addMultiplePhones(checkResults);
+                const { newCount, duplicateCount, newPhones } = await phoneDB.addMultiplePhones(checkResults);
                 
                 totalUnique += newCount;
                 totalDuplicates += duplicateCount;
+                
+                // เก็บเบอร์ที่ไม่ซ้ำจากไฟล์ปัจจุบัน
+                currentUniquePhones.push(...newPhones);
 
                 const progress = 80 + Math.floor((i / allPhones.length) * 15);
                 updateProgress(progress, `กำลังตรวจสอบเบอร์... (${Math.min(i + CHUNK_SIZE, allPhones.length)} จาก ${allPhones.length})`);
@@ -757,6 +811,9 @@
 
             // บันทึกข้อมูลที่ค้างทั้งหมด
             await phoneDB.flush();
+            
+            // บันทึกข้อมูลไฟล์ล่าสุด
+            phoneDB.saveLastUpload(currentUniquePhones);
 
             console.log(`ผลการตรวจสอบ: ทั้งหมด ${allPhones.length}, ซ้ำ ${totalDuplicates}, ใหม่ ${totalUnique}`);
 
@@ -766,14 +823,12 @@
 
         // จัดรูปแบบเบอร์โทรศัพท์แบบเร็ว
         function formatPhoneNumberFast(phone) {
-            // ใช้ regex แทนการ replace ทีละตัว (เร็วกว่า)
             let cleaned = phone.replace(/\D/g, '');
             
             if (cleaned.startsWith('66') && cleaned.length >= 10) {
                 cleaned = '0' + cleaned.substring(2);
             }
             
-            // ตรวจสอบรูปแบบเบอร์โทรไทย
             if ((cleaned.startsWith('0') && cleaned.length === 10) || cleaned.length === 9) {
                 return cleaned;
             }
@@ -803,6 +858,9 @@
                     </div>
                 </div>
             `;
+
+            // แสดงข้อมูลดาวน์โหลด
+            showDownloadInfo(uniqueNumbers);
         }
 
         // ดูฐานข้อมูลปัจจุบัน
@@ -812,41 +870,49 @@
             
             dbInfo.classList.remove('hidden');
             const count = await phoneDB.getCount();
+            const lastUpload = phoneDB.getLastUploadData();
             
             dbCount.innerHTML = `
                 <div class="info-box">
                     <p><strong>ข้อมูลในฐานข้อมูล:</strong></p>
                     <p>จำนวนเบอร์โทรในฐานข้อมูล: <span class="stat-number">${count.toLocaleString()}</span> เบอร์</p>
+                    <p>เบอร์ที่ไม่ซ้ำจากไฟล์ล่าสุด: <span class="stat-number">${lastUpload.length.toLocaleString()}</span> เบอร์</p>
                     <p>ระบบรองรับฐานข้อมูลไม่จำกัดขนาด</p>
                     <p>สามารถเก็บได้มากกว่า 1 หมื่นล้านเบอร์</p>
                 </div>
             `;
         });
 
-        // ดาวน์โหลดไฟล์
+        // ดาวน์โหลดไฟล์ล่าสุด
         document.getElementById('downloadBtn').addEventListener('click', async function() {
             showLoading('กำลังสร้างไฟล์ Excel...');
             
             setTimeout(async () => {
                 try {
-                    const allPhones = await phoneDB.exportToArray();
+                    // ใช้ข้อมูลจากไฟล์ล่าสุดแทนทั้งหมด
+                    const phonesToDownload = phoneDB.getLastUploadData();
                     
-                    if (allPhones.length === 0) {
-                        alert('ไม่พบข้อมูลในฐานข้อมูล');
+                    if (phonesToDownload.length === 0) {
+                        alert('ไม่พบข้อมูลจากไฟล์ล่าสุด กรุณาอัปโหลดไฟล์ก่อน');
                         hideLoading();
                         return;
                     }
                     
                     const wb = XLSX.utils.book_new();
-                    const phoneData = allPhones.map(phone => [phone]);
+                    const phoneData = phonesToDownload.map(phone => [phone]);
                     phoneData.unshift(['เบอร์โทรศัพท์']);
                     
                     const ws = XLSX.utils.aoa_to_sheet(phoneData);
                     XLSX.utils.book_append_sheet(wb, ws, 'เบอร์โทร');
-                    XLSX.writeFile(wb, 'เบอร์โทรที่ไม่ซ้ำ.xlsx');
+                    
+                    // สร้างชื่อไฟล์ด้วย timestamp
+                    const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+                    const filename = `เบอร์โทรที่ไม่ซ้ำ_${timestamp}.xlsx`;
+                    
+                    XLSX.writeFile(wb, filename);
                     
                     hideLoading();
-                    alert(`ดาวน์โหลดไฟล์สำเร็จ! มีทั้งหมด ${allPhones.length.toLocaleString()} เบอร์`);
+                    alert(`ดาวน์โหลดไฟล์สำเร็จ! มีทั้งหมด ${phonesToDownload.length.toLocaleString()} เบอร์ที่ไม่ซ้ำจากไฟล์ล่าสุด`);
                 } catch (error) {
                     console.error('เกิดข้อผิดพลาดในการสร้างไฟล์:', error);
                     alert('เกิดข้อผิดพลาดในการสร้างไฟล์');
@@ -872,6 +938,7 @@
                     document.getElementById('passwordModal').style.display = 'none';
                     document.getElementById('dbInfo').classList.add('hidden');
                     document.getElementById('result').classList.add('hidden');
+                    document.getElementById('downloadInfo').classList.add('hidden');
                     hideLoading();
                     alert('ล้างฐานข้อมูลเรียบร้อยแล้ว');
                 } catch (error) {
@@ -890,6 +957,13 @@
         // แสดงสถานะเมื่อโหลดหน้าเว็บเสร็จ
         document.addEventListener('DOMContentLoaded', function() {
             showUploadStatus('📁 กรุณาเลือกไฟล์ Excel เพื่อเริ่มการตรวจสอบ (จำกัดไม่เกิน 300,000 เบอร์ต่อไฟล์)');
+            
+            // แสดงข้อมูลดาวน์โหลดถ้ามีไฟล์ล่าสุด
+            const lastUpload = phoneDB.getLastUploadData();
+            if (lastUpload.length > 0) {
+                showDownloadInfo(lastUpload.length);
+            }
+            
             console.log('ระบบพร้อมใช้งาน');
         });
     </script>
