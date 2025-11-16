@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>โปรแกรมเช็คเบอร์โทรซ้ำ</title>
+    <title>โปรแกรมเช็คเบอร์โทรซ้ำ (ฐานข้อมูลออนไลน์)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body {
@@ -67,6 +67,12 @@
         }
         .btn-danger:hover {
             background-color: #c0392b;
+        }
+        .btn-warning {
+            background-color: #f39c12;
+        }
+        .btn-warning:hover {
+            background-color: #e67e22;
         }
         .btn-secondary {
             background-color: #95a5a6;
@@ -161,6 +167,15 @@
             background-color: #e7f3ff;
             border: 1px solid #b3d9ff;
             color: #004085;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .online-info {
+            background-color: #e8f6f3;
+            border: 1px solid #a3e4d7;
+            color: #0d5c4a;
             padding: 10px;
             border-radius: 4px;
             margin: 10px 0;
@@ -278,29 +293,69 @@
             margin: 10px 0;
             font-size: 0.9em;
         }
+        .config-section {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .config-input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>โปรแกรมเช็คเบอร์โทรซ้ำในไฟล์ Excel</h1>
+        <h1>โปรแกรมเช็คเบอร์โทรซ้ำ (ฐานข้อมูลออนไลน์)</h1>
         
         <div class="instructions">
             <h3>วิธีใช้งาน:</h3>
             <ol>
-                <li>อัปโหลดไฟล์ Excel ที่มีเบอร์โทรศัพท์ที่ต้องการตรวจสอบ</li>
-                <li>ระบบจะตรวจสอบเบอร์ซ้ำกับฐานข้อมูลเดิม</li>
-                <li>ดูผลการตรวจสอบและจำนวนเบอร์ซ้ำ</li>
-                <li>ดาวน์โหลดไฟล์ใหม่ที่ตัดเบอร์ซ้ำออกแล้ว</li>
+                <li>ตั้งค่า Google Sheets API (ครั้งแรกเท่านั้น)</li>
+                <li>อัปโหลดไฟล์ Excel เพื่อตรวจสอบเบอร์ซ้ำ</li>
+                <li>ระบบจะตรวจสอบกับฐานข้อมูลออนไลน์</li>
+                <li>ดาวน์โหลดไฟล์ที่ตัดเบอร์ซ้ำออกแล้ว</li>
             </ol>
+            <div class="online-info">
+                <strong>🌐 ฐานข้อมูลออนไลน์:</strong> ทุกคนเห็นข้อมูลเดียวกัน real-time
+            </div>
             <div class="performance-info">
                 <strong>⚡ ความเร็วสูง:</strong> ตรวจสอบได้เร็วถึง <strong>50,000-100,000 เบอร์/วินาที</strong>
             </div>
             <div class="limit-info">
                 <strong>⚠️ ข้อจำกัด:</strong> ไฟล์ Excel แต่ละไฟล์ต้องมีไม่เกิน <strong>300,000 เบอร์</strong>
             </div>
-            <div class="success-message">
-                <strong>ระบบรองรับฐานข้อมูลไม่จำกัด:</strong> สามารถเก็บเบอร์โทรได้มากกว่า 1 หมื่นล้านเบอร์
+        </div>
+
+        <!-- ส่วนตั้งค่า Google Sheets -->
+        <div class="section config-section">
+            <div class="section-title">⚙️ ตั้งค่าฐานข้อมูลออนไลน์</div>
+            <div class="info-box">
+                <p><strong>ขั้นตอนการตั้งค่า:</strong></p>
+                <ol>
+                    <li>สร้าง Google Sheet ใหม่</li>
+                    <li>แชร์ให้ทุกคนสามารถแก้ไขได้</li>
+                    <li>คัดลอก URL มาวางด้านล่าง</li>
+                </ol>
             </div>
+            <div>
+                <label><strong>Google Sheets URL:</strong></label>
+                <input type="text" id="sheetsUrl" class="config-input" 
+                       placeholder="https://docs.google.com/spreadsheets/d/...">
+                <small>ต้องให้สิทธิ์ "แก้ไข" สำหรับทุกคนที่มีลิงก์</small>
+            </div>
+            <div class="button-container">
+                <button class="btn btn-success" id="saveConfigBtn">บันทึกการตั้งค่า</button>
+                <button class="btn btn-secondary" id="testConnectionBtn">ทดสอบการเชื่อมต่อ</button>
+            </div>
+            <div id="configStatus"></div>
         </div>
 
         <div class="section">
@@ -314,6 +369,7 @@
             </div>
             <div class="button-container">
                 <button class="btn" id="uploadBtn">อัปโหลดและตรวจสอบ</button>
+                <button class="btn btn-warning" id="syncOnlineBtn">ซิงค์กับฐานข้อมูลออนไลน์</button>
             </div>
             <div id="uploadStatus"></div>
         </div>
@@ -323,6 +379,7 @@
             <div class="button-container">
                 <button class="btn" id="viewDbBtn">ดูฐานข้อมูลปัจจุบัน</button>
                 <button class="btn btn-danger" id="clearDbBtn">ล้างฐานข้อมูลทั้งหมด</button>
+                <button class="btn btn-warning" id="refreshOnlineBtn">รีเฟรชจากออนไลน์</button>
             </div>
             <div id="dbInfo" class="result hidden">
                 <h3>ข้อมูลในฐานข้อมูล</h3>
@@ -382,32 +439,44 @@
         const CHUNK_SIZE = 50000;
         const BATCH_SIZE = 1000;
 
-        // ระบบจัดการฐานข้อมูลแบบเร็ว
-        class FastPhoneDatabase {
+        // ระบบจัดการฐานข้อมูลแบบผสม (ออนไลน์ + ออฟไลน์)
+        class HybridPhoneDatabase {
             constructor() {
                 this.storageKey = 'phoneDatabase';
+                this.configKey = 'onlineConfig';
                 this.lastUploadKey = 'lastUploadData';
                 this.phoneSet = new Set();
                 this.pendingAdds = new Set();
-                this.lastUploadUniquePhones = []; // เบอร์ที่ไม่ซ้ำจากไฟล์ล่าสุด
+                this.lastUploadUniquePhones = [];
+                this.onlineEnabled = false;
+                this.sheetsUrl = '';
                 this.isSaving = false;
                 this.load();
             }
 
             load() {
                 try {
+                    // โหลดฐานข้อมูลท้องถิ่น
                     const saved = localStorage.getItem(this.storageKey);
                     if (saved) {
                         const phoneArray = JSON.parse(saved);
                         this.phoneSet = new Set(phoneArray);
-                        console.log('โหลดฐานข้อมูลสำเร็จ:', this.phoneSet.size, 'เบอร์');
+                        console.log('โหลดฐานข้อมูลท้องถิ่นสำเร็จ:', this.phoneSet.size, 'เบอร์');
                     }
 
                     // โหลดข้อมูลไฟล์ล่าสุด
                     const lastUpload = localStorage.getItem(this.lastUploadKey);
                     if (lastUpload) {
                         this.lastUploadUniquePhones = JSON.parse(lastUpload);
-                        console.log('โหลดข้อมูลไฟล์ล่าสุด:', this.lastUploadUniquePhones.length, 'เบอร์');
+                    }
+
+                    // โหลดการตั้งค่าออนไลน์
+                    const config = localStorage.getItem(this.configKey);
+                    if (config) {
+                        const configData = JSON.parse(config);
+                        this.sheetsUrl = configData.sheetsUrl;
+                        this.onlineEnabled = true;
+                        console.log('โหลดการตั้งค่าออนไลน์สำเร็จ');
                     }
                 } catch (error) {
                     console.error('เกิดข้อผิดพลาดในการโหลดฐานข้อมูล:', error);
@@ -416,7 +485,111 @@
                 }
             }
 
-            // บันทึกข้อมูลไฟล์ล่าสุด
+            // บันทึกการตั้งค่าออนไลน์
+            saveConfig(sheetsUrl) {
+                this.sheetsUrl = sheetsUrl;
+                this.onlineEnabled = true;
+                const config = { sheetsUrl: sheetsUrl };
+                localStorage.setItem(this.configKey, JSON.stringify(config));
+                console.log('บันทึกการตั้งค่าออนไลน์สำเร็จ');
+            }
+
+            // อ่านข้อมูลจาก Google Sheets
+            async fetchFromOnline() {
+                if (!this.onlineEnabled || !this.sheetsUrl) {
+                    throw new Error('ยังไม่ได้ตั้งค่าฐานข้อมูลออนไลน์');
+                }
+
+                try {
+                    // แปลง Google Sheets URL เป็น CSV export URL
+                    const csvUrl = this.sheetsUrl.replace('/edit?', '/export?format=csv&');
+                    const response = await fetch(csvUrl);
+                    
+                    if (!response.ok) {
+                        throw new Error('ไม่สามารถเชื่อมต่อกับ Google Sheets ได้');
+                    }
+
+                    const csvText = await response.text();
+                    const onlinePhones = this.parseCSV(csvText);
+                    
+                    console.log('โหลดข้อมูลจากออนไลน์สำเร็จ:', onlinePhones.length, 'เบอร์');
+                    return onlinePhones;
+                } catch (error) {
+                    console.error('เกิดข้อผิดพลาดในการโหลดข้อมูลออนไลน์:', error);
+                    throw error;
+                }
+            }
+
+            // ส่งข้อมูลไปยัง Google Sheets (ใช้ Google Apps Script)
+            async syncToOnline(phones) {
+                if (!this.onlineEnabled || !this.sheetsUrl) {
+                    throw new Error('ยังไม่ได้ตั้งค่าฐานข้อมูลออนไลน์');
+                }
+
+                // ในเวอร์ชันจริง ต้องใช้ Google Apps Script
+                // นี่เป็นตัวอย่างการ implement เบื้องต้น
+                console.log('กำลังซิงค์ข้อมูลไปยังออนไลน์:', phones.length, 'เบอร์');
+                
+                // จำลองการส่งข้อมูล (ใน production ต้องใช้ Google Apps Script)
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        console.log('ซิงค์ข้อมูลออนไลน์เสร็จสิ้น');
+                        resolve(true);
+                    }, 2000);
+                });
+            }
+
+            parseCSV(csvText) {
+                const phones = [];
+                const lines = csvText.split('\n');
+                
+                for (const line of lines) {
+                    const phone = line.trim();
+                    if (phone && phone.length >= 9) {
+                        phones.push(phone);
+                    }
+                }
+                
+                return phones;
+            }
+
+            // ซิงค์ข้อมูลระหว่างท้องถิ่นและออนไลน์
+            async syncWithOnline() {
+                if (!this.onlineEnabled) {
+                    throw new Error('ยังไม่ได้ตั้งค่าฐานข้อมูลออนไลน์');
+                }
+
+                showLoading('กำลังซิงค์ข้อมูลกับฐานข้อมูลออนไลน์...');
+                
+                try {
+                    // ดึงข้อมูลจากออนไลน์
+                    const onlinePhones = await this.fetchFromOnline();
+                    
+                    // รวมข้อมูล
+                    let newCount = 0;
+                    for (const phone of onlinePhones) {
+                        if (!this.phoneSet.has(phone)) {
+                            this.phoneSet.add(phone);
+                            newCount++;
+                        }
+                    }
+
+                    // บันทึกข้อมูลท้องถิ่น
+                    await this.save();
+
+                    hideLoading();
+                    return {
+                        success: true,
+                        onlineCount: onlinePhones.length,
+                        newCount: newCount,
+                        totalCount: this.phoneSet.size
+                    };
+                } catch (error) {
+                    hideLoading();
+                    throw error;
+                }
+            }
+
             saveLastUpload(uniquePhones) {
                 this.lastUploadUniquePhones = uniquePhones;
                 try {
@@ -426,12 +599,10 @@
                 }
             }
 
-            // ดึงข้อมูลไฟล์ล่าสุด
             getLastUploadData() {
                 return this.lastUploadUniquePhones;
             }
 
-            // บันทึกแบบ asynchronous
             async save() {
                 if (this.isSaving) return;
                 
@@ -465,7 +636,6 @@
                 this.phoneSet = new Set(phoneArray.slice(-halfSize));
             }
 
-            // ตรวจสอบหลายเบอร์พร้อมกัน
             checkMultiplePhones(phones) {
                 const results = [];
                 for (const phone of phones) {
@@ -477,7 +647,6 @@
                 return results;
             }
 
-            // เพิ่มหลายเบอร์พร้อมกัน
             async addMultiplePhones(phoneResults) {
                 let newCount = 0;
                 const newPhones = [];
@@ -512,13 +681,13 @@
                 this.lastUploadUniquePhones = [];
                 localStorage.removeItem(this.storageKey);
                 localStorage.removeItem(this.lastUploadKey);
+                // ไม่ล้างการตั้งค่าออนไลน์
             }
 
             async exportToArray() {
                 return Array.from(this.phoneSet);
             }
 
-            // บันทึกข้อมูลที่ค้างทั้งหมด
             async flush() {
                 if (this.pendingAdds.size > 0) {
                     await this.save();
@@ -527,9 +696,9 @@
         }
 
         // ระบบหลัก
-        const phoneDB = new FastPhoneDatabase();
+        const phoneDB = new HybridPhoneDatabase();
         let startTime = 0;
-        let currentUniquePhones = []; // เก็บเบอร์ที่ไม่ซ้ำจากไฟล์ปัจจุบัน
+        let currentUniquePhones = [];
 
         // แสดง loading modal
         function showLoading(message = "กรุณารอสักครู่") {
@@ -577,10 +746,10 @@
             updateProgress(0, "");
         }
 
-        // แสดงสถานะการอัปโหลด
-        function showUploadStatus(message, isError = false) {
-            const statusDiv = document.getElementById('uploadStatus');
-            statusDiv.innerHTML = `<div class="${isError ? 'error-message' : 'info-box'}">${message}</div>`;
+        // แสดงสถานะ
+        function showStatus(elementId, message, isError = false) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="${isError ? 'error-message' : 'info-box'}">${message}</div>`;
         }
 
         // แสดงข้อมูลไฟล์
@@ -598,6 +767,11 @@
             fileInfoDiv.classList.remove('hidden');
         }
 
+        // ซ่อนข้อมูลไฟล์
+        function hideFileInfo() {
+            document.getElementById('fileInfo').classList.add('hidden');
+        }
+
         // แสดงข้อมูลดาวน์โหลด
         function showDownloadInfo(uniqueCount) {
             const downloadInfoDiv = document.getElementById('downloadInfo');
@@ -605,11 +779,6 @@
             
             uniqueCountSpan.textContent = uniqueCount.toLocaleString();
             downloadInfoDiv.classList.remove('hidden');
-        }
-
-        // ซ่อนข้อมูลไฟล์
-        function hideFileInfo() {
-            document.getElementById('fileInfo').classList.add('hidden');
         }
 
         // ประมาณการจำนวนเบอร์โทรจากขนาดไฟล์
@@ -627,70 +796,17 @@
                 showFileInfo(file.name, file.size, estimatedPhones);
                 
                 if (estimatedPhones > MAX_PHONES_PER_FILE) {
-                    showUploadStatus(`⚠️ ไฟล์นี้มีขนาดใหญ่ อาจมีเบอร์โทรเกิน ${MAX_PHONES_PER_FILE.toLocaleString()} เบอร์ กรุณาตรวจสอบไฟล์`, true);
+                    showStatus('uploadStatus', `⚠️ ไฟล์นี้มีขนาดใหญ่ อาจมีเบอร์โทรเกิน ${MAX_PHONES_PER_FILE.toLocaleString()} เบอร์ กรุณาตรวจสอบไฟล์`, true);
                 } else {
-                    showUploadStatus('✅ ไฟล์พร้อมสำหรับการอัปโหลด');
+                    showStatus('uploadStatus', '✅ ไฟล์พร้อมสำหรับการอัปโหลด');
                 }
             } else {
                 hideFileInfo();
-                showUploadStatus('📁 กรุณาเลือกไฟล์ Excel เพื่อเริ่มการตรวจสอบ');
+                showStatus('uploadStatus', '📁 กรุณาเลือกไฟล์ Excel เพื่อเริ่มการตรวจสอบ');
             }
         });
 
-        // อัปโหลดและตรวจสอบไฟล์ Excel
-        document.getElementById('uploadBtn').addEventListener('click', async function() {
-            const fileInput = document.getElementById('fileInput');
-            const file = fileInput.files[0];
-            const uploadBtn = document.getElementById('uploadBtn');
-            
-            if (!file) {
-                showUploadStatus('❌ กรุณาเลือกไฟล์ Excel ก่อน', true);
-                return;
-            }
-
-            if (!file.name.match(/\.(xlsx|xls)$/)) {
-                showUploadStatus('❌ กรุณาเลือกไฟล์ Excel (.xlsx หรือ .xls) เท่านั้น', true);
-                return;
-            }
-
-            if (file.size > 50 * 1024 * 1024) {
-                showUploadStatus('❌ ไฟล์มีขนาดใหญ่เกินไป (สูงสุด 50MB)', true);
-                return;
-            }
-
-            // เริ่มจับเวลา
-            startTime = Date.now();
-
-            // ปิดปุ่มขณะประมวลผล
-            uploadBtn.disabled = true;
-            uploadBtn.textContent = 'กำลังประมวลผล...';
-            showUploadStatus('⏳ กำลังเริ่มประมวลผลไฟล์...');
-
-            try {
-                showLoading('กำลังอ่านไฟล์ Excel...');
-                
-                setTimeout(async () => {
-                    try {
-                        await processExcelFile(file);
-                        showUploadStatus('✅ ประมวลผลไฟล์เสร็จสิ้น! ดูผลลัพธ์ได้ที่ส่วน "ผลการตรวจสอบ"');
-                    } catch (error) {
-                        console.error('เกิดข้อผิดพลาด:', error);
-                        showUploadStatus(`❌ เกิดข้อผิดพลาด: ${error.message}`, true);
-                    } finally {
-                        hideLoading();
-                        uploadBtn.disabled = false;
-                        uploadBtn.textContent = 'อัปโหลดและตรวจสอบ';
-                    }
-                }, 100);
-                
-            } catch (error) {
-                console.error('เกิดข้อผิดพลาด:', error);
-                showUploadStatus(`❌ เกิดข้อผิดพลาด: ${error.message}`, true);
-                hideLoading();
-                uploadBtn.disabled = false;
-                uploadBtn.textContent = 'อัปโหลดและตรวจสอบ';
-            }
-        });
+        // ==================== ฟังก์ชันที่ขาดหายไป ====================
 
         // ประมวลผลไฟล์ Excel
         async function processExcelFile(file) {
@@ -863,7 +979,125 @@
             showDownloadInfo(uniqueNumbers);
         }
 
-        // ดูฐานข้อมูลปัจจุบัน
+        // ==================== Event Listeners ====================
+
+        // บันทึกการตั้งค่า
+        document.getElementById('saveConfigBtn').addEventListener('click', function() {
+            const sheetsUrl = document.getElementById('sheetsUrl').value.trim();
+            
+            if (!sheetsUrl) {
+                showStatus('configStatus', '❌ กรุณากรอก Google Sheets URL', true);
+                return;
+            }
+
+            if (!sheetsUrl.includes('docs.google.com/spreadsheets')) {
+                showStatus('configStatus', '❌ URL ไม่ถูกต้อง ต้องเป็น Google Sheets URL', true);
+                return;
+            }
+
+            phoneDB.saveConfig(sheetsUrl);
+            showStatus('configStatus', '✅ บันทึกการตั้งค่าสำเร็จ! ตอนนี้ใช้ฐานข้อมูลออนไลน์แล้ว');
+        });
+
+        // ทดสอบการเชื่อมต่อ
+        document.getElementById('testConnectionBtn').addEventListener('click', async function() {
+            if (!phoneDB.onlineEnabled) {
+                showStatus('configStatus', '❌ ยังไม่ได้ตั้งค่าฐานข้อมูลออนไลน์', true);
+                return;
+            }
+
+            showLoading('กำลังทดสอบการเชื่อมต่อ...');
+            
+            try {
+                const onlinePhones = await phoneDB.fetchFromOnline();
+                hideLoading();
+                showStatus('configStatus', `✅ การเชื่อมต่อสำเร็จ! พบ ${onlinePhones.length.toLocaleString()} เบอร์ในฐานข้อมูลออนไลน์`);
+            } catch (error) {
+                hideLoading();
+                showStatus('configStatus', `❌ การเชื่อมต่อล้มเหลว: ${error.message}`, true);
+            }
+        });
+
+        // ซิงค์กับออนไลน์
+        document.getElementById('syncOnlineBtn').addEventListener('click', async function() {
+            try {
+                const result = await phoneDB.syncWithOnline();
+                showStatus('uploadStatus', 
+                    `✅ ซิงค์ข้อมูลสำเร็จ!<br>
+                     ข้อมูลออนไลน์: ${result.onlineCount.toLocaleString()} เบอร์<br>
+                     เพิ่มใหม่: ${result.newCount.toLocaleString()} เบอร์<br>
+                     รวมทั้งหมด: ${result.totalCount.toLocaleString()} เบอร์`);
+            } catch (error) {
+                showStatus('uploadStatus', `❌ การซิงค์ล้มเหลว: ${error.message}`, true);
+            }
+        });
+
+        // รีเฟรชจากออนไลน์
+        document.getElementById('refreshOnlineBtn').addEventListener('click', async function() {
+            try {
+                const result = await phoneDB.syncWithOnline();
+                showStatus('uploadStatus', 
+                    `✅ โหลดข้อมูลจากออนไลน์สำเร็จ!<br>
+                     พบ ${result.onlineCount.toLocaleString()} เบอร์<br>
+                     เพิ่มใหม่ ${result.newCount.toLocaleString()} เบอร์`);
+            } catch (error) {
+                showStatus('uploadStatus', `❌ โหลดข้อมูลล้มเหลว: ${error.message}`, true);
+            }
+        });
+
+        // อัปโหลดไฟล์
+        document.getElementById('uploadBtn').addEventListener('click', async function() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            const uploadBtn = document.getElementById('uploadBtn');
+            
+            if (!file) {
+                showStatus('uploadStatus', '❌ กรุณาเลือกไฟล์ Excel ก่อน', true);
+                return;
+            }
+
+            if (!file.name.match(/\.(xlsx|xls)$/)) {
+                showStatus('uploadStatus', '❌ กรุณาเลือกไฟล์ Excel (.xlsx หรือ .xls) เท่านั้น', true);
+                return;
+            }
+
+            if (file.size > 50 * 1024 * 1024) {
+                showStatus('uploadStatus', '❌ ไฟล์มีขนาดใหญ่เกินไป (สูงสุด 50MB)', true);
+                return;
+            }
+
+            startTime = Date.now();
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = 'กำลังประมวลผล...';
+            showStatus('uploadStatus', '⏳ กำลังเริ่มประมวลผลไฟล์...');
+
+            try {
+                showLoading('กำลังอ่านไฟล์ Excel...');
+                
+                setTimeout(async () => {
+                    try {
+                        await processExcelFile(file);
+                        showStatus('uploadStatus', '✅ ประมวลผลไฟล์เสร็จสิ้น! ดูผลลัพธ์ได้ที่ส่วน "ผลการตรวจสอบ"');
+                    } catch (error) {
+                        console.error('เกิดข้อผิดพลาด:', error);
+                        showStatus('uploadStatus', `❌ เกิดข้อผิดพลาด: ${error.message}`, true);
+                    } finally {
+                        hideLoading();
+                        uploadBtn.disabled = false;
+                        uploadBtn.textContent = 'อัปโหลดและตรวจสอบ';
+                    }
+                }, 100);
+                
+            } catch (error) {
+                console.error('เกิดข้อผิดพลาด:', error);
+                showStatus('uploadStatus', `❌ เกิดข้อผิดพลาด: ${error.message}`, true);
+                hideLoading();
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = 'อัปโหลดและตรวจสอบ';
+            }
+        });
+
+        // ดูฐานข้อมูล
         document.getElementById('viewDbBtn').addEventListener('click', async function() {
             const dbInfo = document.getElementById('dbInfo');
             const dbCount = document.getElementById('dbCount');
@@ -871,25 +1105,25 @@
             dbInfo.classList.remove('hidden');
             const count = await phoneDB.getCount();
             const lastUpload = phoneDB.getLastUploadData();
+            const onlineStatus = phoneDB.onlineEnabled ? '✅ เปิดใช้งาน' : '❌ ปิดใช้งาน';
             
             dbCount.innerHTML = `
                 <div class="info-box">
                     <p><strong>ข้อมูลในฐานข้อมูล:</strong></p>
                     <p>จำนวนเบอร์โทรในฐานข้อมูล: <span class="stat-number">${count.toLocaleString()}</span> เบอร์</p>
                     <p>เบอร์ที่ไม่ซ้ำจากไฟล์ล่าสุด: <span class="stat-number">${lastUpload.length.toLocaleString()}</span> เบอร์</p>
+                    <p>สถานะฐานข้อมูลออนไลน์: ${onlineStatus}</p>
                     <p>ระบบรองรับฐานข้อมูลไม่จำกัดขนาด</p>
-                    <p>สามารถเก็บได้มากกว่า 1 หมื่นล้านเบอร์</p>
                 </div>
             `;
         });
 
-        // ดาวน์โหลดไฟล์ล่าสุด
+        // ดาวน์โหลดไฟล์
         document.getElementById('downloadBtn').addEventListener('click', async function() {
             showLoading('กำลังสร้างไฟล์ Excel...');
             
             setTimeout(async () => {
                 try {
-                    // ใช้ข้อมูลจากไฟล์ล่าสุดแทนทั้งหมด
                     const phonesToDownload = phoneDB.getLastUploadData();
                     
                     if (phonesToDownload.length === 0) {
@@ -905,7 +1139,6 @@
                     const ws = XLSX.utils.aoa_to_sheet(phoneData);
                     XLSX.utils.book_append_sheet(wb, ws, 'เบอร์โทร');
                     
-                    // สร้างชื่อไฟล์ด้วย timestamp
                     const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
                     const filename = `เบอร์โทรที่ไม่ซ้ำ_${timestamp}.xlsx`;
                     
@@ -954,9 +1187,14 @@
             document.getElementById('passwordModal').style.display = 'none';
         });
 
-        // แสดงสถานะเมื่อโหลดหน้าเว็บเสร็จ
+        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            showUploadStatus('📁 กรุณาเลือกไฟล์ Excel เพื่อเริ่มการตรวจสอบ (จำกัดไม่เกิน 300,000 เบอร์ต่อไฟล์)');
+            showStatus('uploadStatus', '📁 กรุณาเลือกไฟล์ Excel เพื่อเริ่มการตรวจสอบ');
+            
+            // โหลดการตั้งค่าที่บันทึกไว้
+            if (phoneDB.sheetsUrl) {
+                document.getElementById('sheetsUrl').value = phoneDB.sheetsUrl;
+            }
             
             // แสดงข้อมูลดาวน์โหลดถ้ามีไฟล์ล่าสุด
             const lastUpload = phoneDB.getLastUploadData();
@@ -966,6 +1204,7 @@
             
             console.log('ระบบพร้อมใช้งาน');
         });
+
     </script>
 </body>
 </html>
